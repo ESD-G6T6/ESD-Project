@@ -34,19 +34,19 @@ DROP TABLE IF EXISTS `parking_lot`;
 CREATE TABLE IF NOT EXISTS `parkingLot` (
   `parkingLotID` varchar(5) NOT NULL,
   `numberOfAvailableScooters` int(3) NOT NULL,
-  `longitude` decimal(10, 2) NOT NULL,
   `latitude` decimal(10, 2) NOT NULL,
+  `longitude` decimal(10, 2) NOT NULL,
   PRIMARY KEY (`parkingLotID`) 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 --
 -- Dumping data for table `parkingLot`
 --
 
-INSERT INTO `parkingLot` (`parkingLotID`, `numberOfAvailableScooters`, `longitude`, `latitude`) VALUES
-('P0001', 5, '1.35', '103.81'),
-('P0002', 5, '1.35', '103.81'),
-('P0003', 5, '1.35', '103.81'),
-('P0004', 5, '1.35', '103.81');
+INSERT INTO `parkingLot` (`parkingLotID`, `numberOfAvailableScooters`, `latitude`, `longitude`) VALUES
+('P0001', 5, 1.4360, 103.7860),
+('P0002', 5, 1.2644, 103.8222),
+('P0003', 5, 1.3346, 103.9624),
+('P0004', 5, 1.3397, 103.7067);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

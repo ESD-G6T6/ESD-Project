@@ -33,7 +33,7 @@ class ParkingLot(db.Model):
 # # return a list of all available parking lots
 @app.route("/parkingLot")
 def get_all(): 
-    return jsonify({"parking lots": [parkingLot.json() for parkingLot in ParkingLot.query.all()]})
+    return jsonify({"parkingLots": [parkingLot.json() for parkingLot in ParkingLot.query.all()]})
 
 # update the number of available scooters of a parking lot, return the info about the updated parking lot record 
 @app.route("/parkingLot/<string:parkingLotID>", methods=['PUT'])
@@ -55,4 +55,4 @@ def update_parkingLot(parkingLotID):
     return jsonify({"message": "Parking lot not found."}), 404
 
 if __name__ == '__main__': 
-    app.run(host='0.0.0.0', port=5002, debug=True)
+    app.run(host='127.0.0.1', port=5002, debug=True)
