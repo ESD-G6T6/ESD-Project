@@ -78,7 +78,7 @@ def create_booking(bookingID):
                 result = {"status": status, "scooterID": scooterID, "parkingLotID": parkingLotID,
                     "availabilityStatus": 0}
 
-    update_scooter(result)
+    updateStatus = update_scooter(result)
     return result
 
 ### Update scooter microservice through a broker
@@ -89,8 +89,8 @@ def update_scooter(result):
         scooterID = result["scooterID"]
         requests.put(scooterURL + str(scooterID), json = result, timeout=1)
         print("Booking status ({:d}) sent to scooter.".format(result["status"]))
-
-    # r = requests.put(scooterURL + str(scooterID), json = bookingJSON)
+    #     return r
+    # return "Unsucessful"
 
 # update the endTime of a booking, return the info about the updated booking record 
 @app.route("/booking/<string:bookingID>", methods=['PUT'])
