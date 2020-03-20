@@ -11,8 +11,8 @@ app = Flask(__name__)
 
 scooterURL = "http://localhost:5000/scooter/"
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/booking'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/booking'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/booking'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/booking'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -23,9 +23,9 @@ class Booking(db.Model):
 
     bookingID = db.Column(db.String(5), primary_key=True)
     scooterID = db.Column(db.String(5), nullable=False)
-    parkingLotID = db.Column(db.String(5), nullable=False)
+    parkingLotID = db.Column(db.String(5), nullable=True)
     startTime = db.Column(db.DateTime, nullable=False)
-    endTime = db.Column(db.DateTime, nullable=False)
+    endTime = db.Column(db.DateTime, nullable=True)
 
     def __init__(self, bookingID, scooterID, parkingLotID, startTime, endTime):
         self.bookingID = bookingID
@@ -60,12 +60,12 @@ def create_booking(bookingID):
         data = request.get_json()
         if (len(data) < 1):
             status = 404
-            result = {"status": status, "message": "Exmpty booking."}
+            result = {"status": status, "message": "Empty booking."}
         else:
             booking = Booking(bookingID, **data)
 
             # check if there is any missing input fields
-            if booking.scooterID == "" or booking.parkingLotID == "" or booking.startTime == "" or booking.endTime == "":
+            if booking.scooterID == "" or booking.parkingLotID == "" or booking.startTime == "":
                 status = 404
                 result = {"status": status, "message": "Missing input fields."}
             # add the booking to the booking database
@@ -78,7 +78,7 @@ def create_booking(bookingID):
 
                 except Exception as e:
                     status = 500
-                    result = {"status": status, "message": "An error occurred when creating the order in DB.", "error": str(e)}
+                    result = {"status": status, "message": "An error occurred when creating the booking in DB.", "error": str(e)}
 
     if status == 201:
         result = {"status": status, "scooterID": scooterID, "parkingLotID": parkingLotID, "availabilityStatus": 0}
@@ -96,28 +96,66 @@ def update_scooter(result):
         scooterID = result["scooterID"]
         r = requests.put(scooterURL + str(scooterID), json = result, timeout=1)
         print("Booking of status ({:d}) sent to scooter.".format(result["status"]))
-        scooterResult = json.loads(r.text.lower())
+        scooterResult = json.loads(r.text)
+        print(scooterResult)
         return scooterResult
 
 # update the endTime of a booking, return the info about the updated booking record 
 @app.route("/booking/<string:bookingID>", methods=['PUT'])
 def update_booking(bookingID):
-    booking = Booking.query.filter_by(bookingID=bookingID).first()
+    status = 201
+    result = {}
 
-    if booking:
+    # retrieve information about order and order items from the request
+    # check if booking existed
+    if (not (Booking.query.filter_by(bookingID=bookingID).first())):
+        status = 400
+        result = {"status": status, "message": "A booking with bookingID '{}' does not exists.".format(bookingID)}
+
+    elif status == 201:
+        # check if booking's enddate is empty
         data = request.get_json()
-        try:
-            if booking.endTime != booking.startTime:
-                return jsonify({"message": "An error occurred updating the booking."}), 500
+        if (len(data) < 1):
+            status = 404
+            result = {"status": status, "message": "Empty booking."}
+        else:
+            # check if there is any missing input fields
+            if data["endTime"] == "":
+                status = 404
+                result = {"status": status, "message": "Missing input fields."}
+            # add the booking to the booking database
             else:
-                booking.endTime = data['endTime']
-                db.session.commit()
-        except:
-            return jsonify({"message": "An error occurred updating the booking."}), 500
+                booking = Booking.query.filter_by(bookingID=bookingID).first()
+                dbEndTime = booking.endTime
+                if (dbEndTime != None):
+                    status = 400
+                    result = {"status": status, "message": "A booking with bookingID '{}' is unavailable to end.".format(bookingID)}
+                else:    
+                    try:
+                        booking.endTime = data["endTime"]
+                        db.session.commit()
+                        scooterID = booking.scooterID
+                        parkingLotID = booking.parkingLotID
 
-        return jsonify(booking.json()), 201
-        
-    return jsonify({"message": "Booking not found."}), 404
+                    except Exception as e:
+                        status = 500
+                        result = {"status": status, "message": "An error occurred when updating the booking in DB.", "error": str(e)}
+
+    if status == 201:
+        result = {"status": status, "scooterID": data["scooterID"], "parkingLotID": data["parkingLotID"], "availabilityStatus": 1}
+        # HTTP call to update scooter via update_scooter function
+        updateScooterStatus = update_scooter(result)
+
+        # calculate the price of the ride
+        if (updateScooterStatus["status"] == 201 and updateScooterStatus["availabilityStatus"] == 1):
+            dbBooking = Booking.query.filter_by(bookingID=bookingID).first()
+            endTime = dbBooking.endTime # 2020-03-07 00:06:00
+            startTime = dbBooking.startTime # 2020-03-07 00:01:00
+            duration = endTime - startTime
+            price = duration * 0.10
+            updateScooterStatus = {"status": updateScooterStatus["status"], "message": updateScooterStatus["message"], "price": price}
+        return updateScooterStatus
+    return result
 
 if __name__ == '__main__': 
     app.run(host='0.0.0.0', port=5001, debug=True)

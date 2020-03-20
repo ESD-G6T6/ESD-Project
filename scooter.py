@@ -11,8 +11,8 @@ app = Flask(__name__)
 
 parkingLotURL = "http://localhost:5002/parkingLot/"
 
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/scooter'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/scooter'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/scooter'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/scooter'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -22,7 +22,7 @@ class Scooter(db.Model):
     __tablename__ = 'scooter'
 
     scooterID = db.Column(db.String(5), primary_key=True)
-    parkingLotID = db.Column(db.String(5), nullable=False)
+    parkingLotID = db.Column(db.String(5), nullable=True)
     availabilityStatus = db.Column(db.Boolean, nullable=False)
 
     def __init__(self, scooterID, parkingLotID, availabilityStatus):
@@ -85,22 +85,41 @@ def update_scooter(scooterID):
     # Scooter exists in the database
     elif status == 201:
         dbScooter = Scooter.query.filter_by(scooterID=scooterID).first()
-        # Scooter is unavailble to rent beacause it is not available 
-        if (dbScooter.availabilityStatus == availabilityStatus or dbScooter.parkingLotID == "null"):
-            status = 400
-            result = {"status": status, "message": "A scooter with scooterID '{}' is unavailable to rent.".format(scooterID)}
-        else:
-            # update scooter info (parking lot ID and availability status) in database
-            try:
-                dbScooter.parkingLotID = "null"
-                dbScooter.availabilityStatus = 0
-                db.session.commit()
-            except Exception as e:
-                status = 500
-                result = {"status": status, "message": "An error occurred when updating the scooter in DB.", "error": str(e)}
-        
+
+        # Scenario 1: renting of scooter
+        if (availabilityStatus == 0):
+            # Scooter is unavailble to rent beacause it is not available 
+            if (dbScooter.availabilityStatus == availabilityStatus or dbScooter.parkingLotID == None):
+                status = 400
+                result = {"status": status, "message": "A scooter with scooterID '{}' is unavailable to rent.".format(scooterID)}
+            else:
+                # update scooter info (parking lot ID and availability status) in database
+                try:
+                    dbScooter.parkingLotID = None
+                    dbScooter.availabilityStatus = 0
+                    db.session.commit()
+                except Exception as e:
+                    status = 500
+                    result = {"status": status, "message": "An error occurred when updating the scooter in DB.", "error": str(e)}
+
+        # Scenario 2: ending scooter ride
+        elif (availabilityStatus == 1):
+            # Scooter is unavailble to be updated beacause it is available 
+            if (dbScooter.availabilityStatus == availabilityStatus or dbScooter.parkingLotID != None):
+                status = 400
+                result = {"status": status, "message": "A scooter with scooterID '{}' is unavailable to be updated as it is not rented.".format(scooterID)}
+            else:
+                # update scooter info (parking lot ID and availability status) in database
+                try:
+                    dbScooter.parkingLotID = parkingLotID
+                    dbScooter.availabilityStatus = 1
+                    db.session.commit()
+                except Exception as e:
+                    status = 500
+                    result = {"status": status, "message": "An error occurred when updating the scooter in DB.", "error": str(e)}
+
         if status == 201:
-            result = {"status": status, "scooterID": scooterID, "parkingLotID": parkingLotID}
+            result = {"status": status, "scooterID": scooterID, "parkingLotID": parkingLotID, "availabilityStatus": availabilityStatus}
             print(result)
 
             # send HTTP call to parking lot to update the number of available scooters
@@ -109,6 +128,7 @@ def update_scooter(scooterID):
 
     return jsonify(result)
 
+# HTTP call to parking lot 
 def send_scooter(result):
     result = json.loads(json.dumps(result, default=str))
     if "parkingLotID" in result: 
@@ -116,7 +136,7 @@ def send_scooter(result):
         parkingLotID = result["parkingLotID"]
         r = requests.put(parkingLotURL + str(parkingLotID), json = result, timeout=1)
         print("Scooter of status ({:d}) sent to parking lot.".format(result["status"]))
-        parkingLotResult = json.loads(r.text.lower())
+        parkingLotResult = json.loads(r.text)
     return parkingLotResult
 
 if __name__ == '__main__': 

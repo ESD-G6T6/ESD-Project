@@ -33,7 +33,7 @@ USE `scooter`;
 DROP TABLE IF EXISTS `scooter`;
 CREATE TABLE IF NOT EXISTS `scooter` (
   `scooterID` varchar(5) NOT NULL,
-  `parkingLotID` varchar(5) NOT NULL,
+  `parkingLotID` varchar(5),
   `availabilityStatus` boolean NOT NULL,
   PRIMARY KEY (`scooterID`) 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

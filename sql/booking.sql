@@ -34,9 +34,9 @@ DROP TABLE IF EXISTS `booking`;
 CREATE TABLE IF NOT EXISTS `booking` (
   `bookingID` varchar(5) NOT NULL,
   `scooterID` varchar(5) NOT NULL,
-  `parkingLotID` varchar(5) NOT NULL,
+  `parkingLotID` varchar(5),
   `startTime` datetime NOT NULL,
-  `endTime` datetime NOT NULL,
+  `endTime` datetime,
   PRIMARY KEY (`bookingID`) 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
