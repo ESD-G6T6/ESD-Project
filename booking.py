@@ -6,16 +6,14 @@ import requests
 import json
 import sys
 import os
-import pika
-
-scooterURL = "http://localhost:5000/scooter/"
 
 app = Flask(__name__)
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/booking'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/booking'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+scooterURL = "http://localhost:5000/scooter/"
 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/booking'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/booking'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 CORS(app)
@@ -52,45 +50,54 @@ def create_booking(bookingID):
     result = {}
 
     # retrieve information about order and order items from the request
+    # check if booking existed
     if (Booking.query.filter_by(bookingID=bookingID).first()):
         status = 400
         result = {"status": status, "message": "A booking with bookingID '{}' already exists.".format(bookingID)}
 
     elif status == 201:
+        # check if booking is empty
         data = request.get_json()
         if (len(data) < 1):
             status = 404
             result = {"status": status, "message": "Exmpty booking."}
         else:
             booking = Booking(bookingID, **data)
-            
-            try:
-                db.session.add(booking)
-                db.session.commit()
-                scooterID = booking.scooterID
-                parkingLotID = booking.parkingLotID
-                update_scooter(scooterID)
-            except Exception as e:
-                status = 500
-                result = {"status": status, "message": "An error occurred when creating the order in DB.", "error": str(e)}
 
-            if status == 201:
-                result = {"status": status, "scooterID": scooterID, "parkingLotID": parkingLotID,
-                    "availabilityStatus": 0}
+            # check if there is any missing input fields
+            if booking.scooterID == "" or booking.parkingLotID == "" or booking.startTime == "" or booking.endTime == "":
+                status = 404
+                result = {"status": status, "message": "Missing input fields."}
+            # add the booking to the booking database
+            else:
+                try:
+                    db.session.add(booking)
+                    db.session.commit()
+                    scooterID = booking.scooterID
+                    parkingLotID = booking.parkingLotID
 
-    updateStatus = update_scooter(result)
+                except Exception as e:
+                    status = 500
+                    result = {"status": status, "message": "An error occurred when creating the order in DB.", "error": str(e)}
+
+    if status == 201:
+        result = {"status": status, "scooterID": scooterID, "parkingLotID": parkingLotID, "availabilityStatus": 0}
+        # HTTP call to update scooter via update_scooter function
+        updateScooterStatus = update_scooter(result)
+        
+        return updateScooterStatus
     return result
 
-### Update scooter microservice through a broker
+### Update scooter microservice through HTTP call
 def update_scooter(result):
     result = json.loads(json.dumps(result, default=str))
     if "scooterID" in result: 
         # inform Scooter
         scooterID = result["scooterID"]
-        requests.put(scooterURL + str(scooterID), json = result, timeout=1)
-        print("Booking status ({:d}) sent to scooter.".format(result["status"]))
-    #     return r
-    # return "Unsucessful"
+        r = requests.put(scooterURL + str(scooterID), json = result, timeout=1)
+        print("Booking of status ({:d}) sent to scooter.".format(result["status"]))
+        scooterResult = json.loads(r.text.lower())
+        return scooterResult
 
 # update the endTime of a booking, return the info about the updated booking record 
 @app.route("/booking/<string:bookingID>", methods=['PUT'])
