@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from os import environ
+from datetime import timedelta
 import requests
 import json
 import sys
@@ -151,9 +152,15 @@ def update_booking(bookingID):
             dbBooking = Booking.query.filter_by(bookingID=bookingID).first()
             endTime = dbBooking.endTime # 2020-03-07 00:06:00
             startTime = dbBooking.startTime # 2020-03-07 00:01:00
-            duration = endTime - startTime
-            price = duration * 0.10
-            updateScooterStatus = {"status": updateScooterStatus["status"], "message": updateScooterStatus["message"], "price": price}
+            duration = str(endTime - startTime)
+            
+            delta = timedelta(hours=int(duration.split(':')[0]), minutes=int(duration.split(':')[1]), seconds=int(duration.split(':')[2]))
+            minutes = delta.total_seconds()/60
+
+            price = minutes * 0.10
+            status = updateScooterStatus["status"]
+            message = updateScooterStatus["message"]
+            updateScooterStatus = {"status": status, "message": message, "price": str(price), "duration": str(minutes)}
         return updateScooterStatus
     return result
 
