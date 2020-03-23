@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from os import environ
 from datetime import timedelta
+from datetime import datetime
 import requests
 import json
 import sys
@@ -10,10 +11,10 @@ import os
 
 app = Flask(__name__)
 
-scooterURL = "http://localhost:5000/scooter/"
+scooterURL = "http://127.0.0.1:5000/scooter/"
 
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/booking'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/booking'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/booking'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/booking'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -95,14 +96,14 @@ def update_scooter(result):
     if "scooterID" in result: 
         # inform Scooter
         scooterID = result["scooterID"]
-        r = requests.put(scooterURL + str(scooterID), json = result, timeout=1)
+        r = requests.post(scooterURL + str(scooterID), json = result, timeout=1)
         print("Booking of status ({:d}) sent to scooter.".format(result["status"]))
         scooterResult = json.loads(r.text)
         print(scooterResult)
         return scooterResult
 
 # update the endTime of a booking, return the info about the updated booking record 
-@app.route("/booking/<string:bookingID>", methods=['PUT'])
+@app.route("/booking/payment/<string:bookingID>", methods=['POST'])
 def update_booking(bookingID):
     status = 201
     result = {}
@@ -150,6 +151,7 @@ def update_booking(bookingID):
         # calculate the price of the ride
         if (updateScooterStatus["status"] == 201 and updateScooterStatus["availabilityStatus"] == 1):
             dbBooking = Booking.query.filter_by(bookingID=bookingID).first()
+
             endTime = dbBooking.endTime # 2020-03-07 00:06:00
             startTime = dbBooking.startTime # 2020-03-07 00:01:00
             duration = str(endTime - startTime)
@@ -165,4 +167,4 @@ def update_booking(bookingID):
     return result
 
 if __name__ == '__main__': 
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='127.0.0.1', port=5001, debug=True)

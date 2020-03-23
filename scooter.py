@@ -9,10 +9,10 @@ import sys
 
 app = Flask(__name__)
 
-parkingLotURL = "http://localhost:5002/parkingLot/"
+parkingLotURL = "http://127.0.0.1:5002/parkingLot/"
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/scooter'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/scooter'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/scooter'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/scooter'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -57,7 +57,7 @@ def find_by_parkingLotID(parkingLotID):
 
 # receive the update from booking - update scooter function
 # update the parkingLotID and availabilityStatus of a scooter, return the info about the updated scooter record 
-@app.route("/scooter/<string:scooterID>", methods=['PUT'])
+@app.route("/scooter/<string:scooterID>", methods=['POST'])
 def update_scooter(scooterID):
     result = None
     status = 201
@@ -134,10 +134,10 @@ def send_scooter(result):
     if "parkingLotID" in result: 
         # inform Parking Lot
         parkingLotID = result["parkingLotID"]
-        r = requests.put(parkingLotURL + str(parkingLotID), json = result, timeout=1)
+        r = requests.post(parkingLotURL + str(parkingLotID), json = result, timeout=1)
         print("Scooter of status ({:d}) sent to parking lot.".format(result["status"]))
         parkingLotResult = json.loads(r.text)
     return parkingLotResult
 
 if __name__ == '__main__': 
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)

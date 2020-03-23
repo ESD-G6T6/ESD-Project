@@ -23,10 +23,7 @@
             $('#map')
                 .append("<label>"+message+"</label>");
     }
-
-
-
-    
+ 
     function initMap(){
       var markers = [];
       var latitude = [] ;
@@ -34,7 +31,6 @@
       var scooterNumber=[] ;
       var parkingLotID=[];
       
-
       $(async() => {           
         // connect to parkingLot microservice
         var serviceURL = "http://127.0.0.1:5002/parkingLot";
