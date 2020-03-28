@@ -96,12 +96,12 @@
                 <div class="col-lg-6">
                     <div class="about-text">
                         <h2>Story About Us</h2>
-                        <p class="first-para">Lorem ipsum proin gravida nibh vel velit auctor aliquet. Aenean pretium
-                            sollicitudin, nascetur auci elit consequat ipsutissem niuis sed odio sit amet nibh vulputate
-                            cursus a amet.</p>
-                        <p class="second-para">Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, gravida
-                            quam semper libero sit amet. Etiam rhoncus. Maecenas tempus, tellus eget condimentum
-                            rhoncus, gravida quam semper libero sit amet.</p>
+                        <p class="first-para"> Good things happen when people can move, whether across town or toward their dreams.Opportunities appear, open up, become reality.
+                            What started as a way to tap a button to get a ride has led to billions of moments of human connection 
+                            as people around the world go all kinds of places in all kinds of ways with the help of our technology.
+                            </p>
+                        <p class="second-para">We are committed to doing our part, giving riders a way to get from point A to point B and technology is at the heart of our approach.
+                            We partner with safety advocates and develop new technologies and systems to help improve safety and help make it easier for everyone to get around.</p>
                     </div>
                 </div>
             </div>
@@ -163,19 +163,19 @@
                 <div class="col-md-4">
                     <div class="contact-option">
                         <span>Phone</span>
-                        <p>(123) 118 9999 - (123) 118 9999</p>
+                        <p>(+65) 6488 9817</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="contact-option">
                         <span>Address</span>
-                        <p>72 Kangnam, 45 Opal Point Suite 391</p>
+                        <p>81 Victoria St, Singapore 188065</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="contact-option">
                         <span>Email</span>
-                        <p>contactcompany@Gutim.com</p>
+                        <p>contactcompany@Ooster.com</p>
                     </div>
                 </div>
             </div>

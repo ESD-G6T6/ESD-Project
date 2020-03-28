@@ -5,40 +5,30 @@ require_once 'include/common.php';
 ?>
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Ooster Ride Now">
+    <meta name="description" content="Gutim Template">
     <meta name="keywords" content="Gutim, unica, creative, html">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Ooster | Ride Now</title>
+    <title>Gutim | Ride Done</title>
 
-    <link rel="stylesheet" href="">
-        <!--[if lt IE 9]>
-          <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
-        <!-- Bootstrap libraries -->
-        <meta name="viewport" 
-            content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap"
+        rel="stylesheet">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script 
+    src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     
-        <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet"
-        href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
-        integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" 
-        crossorigin="anonymous">
+    <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+    integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+    crossorigin="anonymous"></script>
     
-        <!-- Latest compiled and minified JavaScript -->
-        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-        <script 
-        src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        
-        <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
-        integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
-        crossorigin="anonymous"></script>
-        
-        <script 
-        src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
-        integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
-        crossorigin="anonymous"></script>
+    <script 
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+    integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+    crossorigin="anonymous"></script>
     
     <!-- Css Styles -->
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
@@ -50,16 +40,16 @@ require_once 'include/common.php';
 </head>
 
 <body>
+
     <!-- Breadcrumb Section Begin -->
     <section class="breadcrumb-section set-bg" data-setbg="img/breadcrumb/classes-breadcrumb.jpg">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="breadcrumb-text">
-                        <h2>Ride Now</h2>
+                        <h2>Ride Completed</h2>
                         <div class="breadcrumb-option">
                             <a href="./index.php"><i class="fa fa-home"></i>Home</a>
-                            <span>Ride Now</span>
                         </div>
                     </div>
                 </div>
@@ -198,119 +188,20 @@ require_once 'include/common.php';
     <!-- Contact Section Begin -->
     <section class="contact-section spad">
 
-                <div id="main-container" class="container">
-                    <div class="contact-form">
-                        <h4>Please enter your Scooter ID and Parking Lot ID</h4>
+        <div class="container">
 
-                        <!-- form section begins-->
-                        <form id="ridenowForm" method="POST">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    
-                                    <div class="contact-option">
-                                        <span>Scooter ID :</span>
-                                    </div>
-                                    <input type="text" placeholder="S0001" id="scooterID" name= "scooterID" required> <br>
-                                    
-                                    <div class="contact-option">
-                                        <span>Parking Lot ID :</span>
-                                    </div>
-                                    <input type="text" placeholder="P0001" id="parkingLotID" name="parkingLotID" required>
-                                    <button type = "submit" class="btn btn-dark" >Send</button>
-                                </div>
-                            </div>
-                        </form>
-                        <!-- form section ends -->
+            <div class="contact-form">
+                <h4 >Ride Summary</h4>
 
-                    </div>
-                </div>
+            </div>
+        </div>
+                
     </section>
     <!-- Contact Section End -->
-    
-    <!-- get bookingID, scooterID begin-->
-        <?php
 
-        //-- get booking id begin --
-            //to retrieve last bookingID and add 1
-            $dao = new BookingDAO();
-            $result = $dao->retrieveAll();
-            $last_bookingID = $result[count($result)-1];
-            $new_bookingIDnumber_int = (int) substr($last_bookingID,1) + 1;
-            
-            //number of 0s to add
-            $new_bookingIDnumber_str = (string) $new_bookingIDnumber_int;
-            $numberOfZeroToAdd = 4 - strlen($new_bookingIDnumber_str);
-            $bookingID = 'B' . str_repeat("0", $numberOfZeroToAdd) . $new_bookingIDnumber_str;
-
-            //session bookingid to pass to riding page
-            $_SESSION['bookingID'] = $bookingID;
-        //-- get booking id ends --
-        
-        //-- get startTime begin --
-            date_default_timezone_set('Asia/Singapore');
-            $startTime = date("Y-m-d H:i:s");
-        //-- get startTime end --
-
-        ?>
-    <!-- get bookingID, startTime ends-->
-
-    <script>
-    //-- HTTP POST begins--
-        function showError(message) {
-
-            $('#ridenowForm').hide();
-            $('#main-container')
-            .append("<label>"+message+"</label>");
-        }
-
-        $("#ridenowForm").submit(async(event) => {  
-            
-            event.preventDefault();
-            $("#error").hide();
-
-            var bookingID = '<?php echo $bookingID; ?>';
-            var startTime = '<?php echo $startTime; ?>';
-            var endTime = null;
-            var scooterID = $('#scooterID').val();
-            var parkingLotID = $('#parkingLotID').val();
-            var bookingURL = "http://127.0.0.1:5001/booking" + "/" + bookingID;
-
-            console.log(bookingID);
-            console.log(scooterID);
-            console.log(parkingLotID);
-            console.log(startTime);
-            console.log(endTime);
-            
-            try {
-                const response = 
-                await fetch(
-                    bookingURL,
-                    {
-                    mode: 'cors',
-                    method: 'POST',
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ scooterID: scooterID, parkingLotID: parkingLotID,startTime: startTime, endTime:endTime})
-                    }
-                );
-
-                const data = await response.json();
-
-                if (!data) {
-                    showError('Booking failed.')
-                } else {
-                    window.location = 'http://localhost/ESD-Project/ridding.php';
-                }
-            }
-            catch (error) {
-                showError
-                ('There is a problem making your booking, please try again later.<br />'+error);
-            }
-        });
-    //-- HTTP POST ends--
-    </script>
 
    <!-- Footer Section Begin -->
-    <footer class="footer-section">
+   <footer class="footer-section">
         <div class="container">
             <div class="row">
                 <div class="col-md-4">

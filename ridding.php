@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="zxx">
-
+<?php
+require_once 'include/common.php';
+?>
 <head>
     <meta charset="UTF-8">
     <meta name="description" content="Gutim Template">
     <meta name="keywords" content="Gutim, unica, creative, html">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Gutim | Template</title>
+    <title>Gutim | Ridding</title>
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap"
@@ -38,10 +40,6 @@
 </head>
 
 <body>
-    <!-- Page Preloder -->
-    <!-- <div id="preloder">
-        <div class="loader"></div>
-    </div> -->
 
     <!-- Breadcrumb Section Begin -->
     <section class="breadcrumb-section set-bg" data-setbg="img/breadcrumb/classes-breadcrumb.jpg">
@@ -58,13 +56,131 @@
     </section>
     <!-- Breadcrumb Section End -->
 
+    <style>
+        #map{
+        height:700px;
+        width:100%;
+        }
+    </style>
+
     <!-- Map Section Begin -->
-    <div class="map">
-        <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d24112.92132811736!2d-74.20651812810036!3d40.93514309648714!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2fda38587e887%3A0xf03207815e338a0d!2sHaledon%2C%20NJ%2007508%2C%20USA!5e0!3m2!1sen!2sbd!4v1578120776078!5m2!1sen!2sbd"
-            height="612" style="border:0;" allowfullscreen=""></iframe>
-        <img src="img/icon/location.png" alt="">
-    </div>
+        <div id="map">
+        <script>
+            function showError(message) {
+                    // Display an error under the main container
+                    $('#map')
+                        .append("<label>"+message+"</label>");
+            }
+        
+            function initMap(){
+            var markers = [];
+            var latitude = [] ;
+            var longitude=[] ;
+            var scooterNumber=[] ;
+            var parkingLotID=[];
+            
+            $(async() => {           
+                // connect to parkingLot microservice
+                var serviceURL = "http://127.0.0.1:5002/parkingLot";
+                try{
+                const response =
+                        await fetch(
+                        serviceURL, { method: 'GET' }
+                        );
+                const data = await response.json();
+                var coordinates = data.parkingLots;
+                //console.log(coordinates);
+                if (!coordinates || !coordinates.length) {
+                    showError('coordinates list empty or undefined.');
+                } else{
+                    for (const coordinate of coordinates) {
+                    latitude.push(coordinate.latitude);
+                    longitude.push(coordinate.longitude);
+                    scooterNumber.push(coordinate.numberOfAvailableScooters);
+                    parkingLotID.push(coordinate.parkingLotID);
+                    }
+                    // console.log(latitude);
+                    // console.log(longitude);
+                    // console.log(scooterNumber);
+                    // console.log(markers);
+
+                    for (i=0; i<latitude.length;i++){
+                    if(i==0){
+                        markers.push({
+                        coords:{lat:latitude[i],
+                                lng:longitude[i]},
+                        content:'Available Scooters: ' + scooterNumber[i] + '</br> Parking Lot ID: ' + parkingLotID[i]
+                        //icon:'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'
+                        });
+                    }
+
+                    else{
+                        markers.push({
+                        coords:{lat:latitude[i],
+                                lng:longitude[i]},
+                        content:'Available Scooters: ' + scooterNumber[i] + '</br> Parking Lot ID: ' + parkingLotID[i],
+                        });
+
+                    }
+                    }
+                    // console.log(latitude);
+                    // console.log(longitude);
+                    // console.log(scooterNumber);
+                    console.log(markers);
+
+                    var options = {
+                    zoom:11.2,
+                    center:{lat:1.3521,lng:103.8198}
+                    }
+
+                    // New map
+                    var map = new google.maps.Map(document.getElementById('map'), options);
+
+                    for(var i = 0;i < markers.length;i++){
+                    // Add marker
+                    addMarker(markers[i]);
+                    }
+
+                    // Add Marker Function
+                    function addMarker(props){
+                    var marker = new google.maps.Marker({
+                        position: props.coords,
+                        map: map,
+                        icon:props.iconImage
+                    });
+
+                    // Check for customicon
+                    if(props.iconImage){
+                        // Set icon image
+                        marker.setIcon(props.iconImage);
+                    }
+
+                    // Check content
+                    if(props.content){
+                        var infoWindow = new google.maps.InfoWindow({
+                        content:props.content
+                        });
+
+                        marker.addListener('click', function(){
+                        infoWindow.open(map, marker);
+                        });
+                    }
+                    }
+
+                }
+                }catch(error){
+                // Errors when calling the service; such as network error, 
+                // service offline, etc
+                showError('There is a problem retrieving coordinates data, please try again later.<br />'+error);
+                }
+            }); //end of async function
+            }//end of init func
+        </script>
+
+        <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWFzWbjps15KgfXTkBzk1mg0kjakbdFNY&callback=initMap">
+        </script>
+        </div>
     <!-- Map Section End -->
 
     <!-- Contact Section Begin -->
@@ -76,7 +192,7 @@
                 <h4 >Please enter your Parking Lot ID to end your ride :</h4>
 
                 <!-- form section begins-->
-                <form id="getscooterIDform" method="POST" action="ridenow.php">
+                <form id="parkingLotIDform" method="POST">
                     <div class="row">
                         <div class="col-lg-6">
 
@@ -102,48 +218,22 @@
                 
     </section>
     <!-- Contact Section End -->
-
     
     <!-- get bookingID, scooterID, parkingLot ID, startTime begin-->
     <?php
 
     //-- get booking id begin --
-    //to retrieve last bookingID and add 1
-        require_once 'include/common.php';
-        $dao = new BookingDAO();
-        $result = $dao->retrieveAll();
-        $last_bookingID = $result[count($result)-1];
-        $new_bookingIDnumber_int = (int) substr($last_bookingID,1) + 1;
-        
-        //number of 0s to add
-        $new_bookingIDnumber_str = (string) $new_bookingIDnumber_int;
-        $numberOfZeroToAdd = 4 - strlen($new_bookingIDnumber_str);
-        $bookingID = 'B' . str_repeat("0", $numberOfZeroToAdd) . $new_bookingIDnumber_str;
+        $bookingID = $_SESSION['bookingID'];
     //-- get booking id ends --
     
-    //-- get startTime begin --
+    //-- get endTime begin --
         date_default_timezone_set('Asia/Singapore');
-        $startTime = date("Y-m-d H:i:s");
-    //-- get startTime end --
-
-    //-- get scooter and parking lot IDs begin--
-        if( isset($_POST['scooterID']) && isset($_POST['parkingLotID']) ) {
-            $scooterID = $_POST['scooterID'];
-            $parkingLotID = $_POST['parkingLotID'];
-            $result =  $dao->insertbookingdetails($bookingID,$scooterID,$parkingLotID,$startTime);
-        }
-    //-- get scooter and parking lot IDs end--
- 
-    // var_dump($bookingID);
-    // var_dump($scooterID);
-    // var_dump($parkingLotID);
-    // var_dump($startTime);
-    // var_dump($result);
-
-    //ONLY NEED TO PASS BOOKING ID AND END TIME
+        $endTime = date("Y-m-d H:i:s");
+    //-- get endTime end --
 
     ?>
     <script>
+    //-- timer function begins --
         var h1 = document.getElementsByTagName('h1')[0],
         seconds = 0, minutes = 0, hours = 0,
         t;
@@ -168,30 +258,82 @@
             t = setTimeout(add, 1000);
         }
         timer();
-    
+    //-- timer function ends --
+
+    //-- HTTP POST begins--
+        function showError(message) {
+            // Hide the table and button in the event of error
+            $('#ridenowForm').hide();
+            // Display an error under the main container
+            $('#main-container')
+                .append("<label>"+message+"</label>");
+        }
+
+        $("#parkingLotIDform").submit(async(event) => {  
+            //Prevents screen from refreshing when submitting
+            //event is referring to the submit event
+            
+            event.preventDefault();
+            $("#error").hide();
+
+            var bookingID = '<?php echo $bookingID; ?>';
+            var endTime = '<?php echo $endTime; ?>';
+            var parkingLotID = $('#parkingLotID').val();
+            var bookingURL = "http://127.0.0.1:5001/booking/payment" + "/" + bookingID;
+
+            console.log(bookingID);
+            console.log(endTime);
+            console.log(parkingLotID);
+            
+            try {
+                const response = 
+                await fetch(
+                    bookingURL,
+                    {
+                    mode: 'cors',
+                    method: 'POST',
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ endTime: endTime, parkingLotID: parkingLotID})
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!data) {
+                    showError('Booking failed.')
+                } else {
+                    window.location = 'http://localhost/ESD-Project/ridedone.php';
+                }
+            }
+            catch (error) {
+                showError
+                ('There is a problem making your booking, please try again later.<br />'+error);
+            }
+        });
+    //-- HTTP POST ends--
     </script>
     <!-- get bookingID, scooterID, parkingLot ID, startTime ends-->
 
    <!-- Footer Section Begin -->
-    <footer class="footer-section">
+   <footer class="footer-section">
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
                     <div class="contact-option">
                         <span>Phone</span>
-                        <p>(123) 118 9999 - (123) 118 9999</p>
+                        <p>(+65) 6488 9817</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="contact-option">
                         <span>Address</span>
-                        <p>72 Kangnam, 45 Opal Point Suite 391</p>
+                        <p>81 Victoria St, Singapore 188065</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="contact-option">
                         <span>Email</span>
-                        <p>contactcompany@Gutim.com</p>
+                        <p>contactcompany@Ooster.com</p>
                     </div>
                 </div>
             </div>

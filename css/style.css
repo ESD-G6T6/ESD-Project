@@ -578,25 +578,7 @@ ul, ol {
 	display: inline-block;
 }
 
-/*---------------------
-  Map Section
------------------------*/
 
-.map {
-	height: 612px;
-	position: relative;
-}
-.map iframe {
-	width: 100%;
-}
-.map img {
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	-webkit-transform: translate(-14px, -21px);
-	-ms-transform: translate(-14px, -21px);
-	transform: translate(-14px, -21px);
-}
 
 /*---------------------
   Contact Section
