@@ -244,7 +244,6 @@ require_once 'include/common.php';
 
             //session bookingid to pass to riding page
             $_SESSION['bookingID'] = $bookingID;
-            echo $bookingID;
         //-- get booking id ends --
         
         //-- get startTime begin --
