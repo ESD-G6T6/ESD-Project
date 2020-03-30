@@ -127,7 +127,7 @@
                                     <p>----</p>
                                 </div>
                                 <div class="services-item bg-gray pd-b">
-                                    <img src="/img/services/two.png" alt="">
+                                    <img src="img/services/two.png" alt="">
                                     <h4>Start Riding</h4>
                                     <p>Select your desired e-scooter and key in its unique ID in the Ooster rental webpage,
                                         put on a helmet and go.</p>

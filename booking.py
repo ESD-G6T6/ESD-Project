@@ -15,7 +15,7 @@ app = Flask(__name__)
 scooterURL = "http://127.0.0.1:5000/scooter/"
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/booking'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/booking'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/booking'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -42,9 +42,9 @@ class Booking(db.Model):
             "startTime": self.startTime, "endTime": self.endTime}
 
 # return a list of all available bookings
-@app.route("/booking")
-def get_all(): 
-    return jsonify({"bookings": [booking.json() for booking in Booking.query.all()]})
+# @app.route("/booking")
+# def get_all(): 
+#     return jsonify({"bookings": [booking.json() for booking in Booking.query.all()]})
 
 # create a new booking
 @app.route("/booking/<string:bookingID>", methods=['POST'])
@@ -86,7 +86,8 @@ def create_booking(bookingID):
     if status == 201:
         result = {"status": status, "scooterID": scooterID, "parkingLotID": parkingLotID, "availabilityStatus": 0}
         # HTTP call to update scooter via update_scooter function
-        updateScooterStatus = update_scooter(result)
+        updateScooterStatus = jsonify(update_scooter(result))
+        updateScooterStatus.headers.add('Access-Control-Allow-Origin', '*')
         
         return updateScooterStatus
     return result
@@ -137,8 +138,8 @@ def update_booking(bookingID):
                     try:
                         booking.endTime = data["endTime"]
                         db.session.commit()
-                        #scooterID = booking.scooterID
-                        #parkingLotID = booking.parkingLotID
+                        # scooterID = booking.scooterID
+                        # parkingLotID = booking.parkingLotID
 
                     except Exception as e:
                         status = 500
@@ -164,6 +165,9 @@ def update_booking(bookingID):
             status = updateScooterStatus["status"]
             message = updateScooterStatus["message"]
             updateScooterStatus = {"status": status, "message": message, "price": str(price), "duration": str(minutes)}
+
+        updateScooterStatus = jsonify(updateScooterStatus)
+        updateScooterStatus.headers.add('Access-Control-Allow-Origin', '*')
         return updateScooterStatus
     return result
 

@@ -2,14 +2,14 @@
 <html lang="zxx">
 <?php
 require_once 'include/common.php';
-?>
+?>    
 <head>
     <meta charset="UTF-8">
     <meta name="description" content="Gutim Template">
     <meta name="keywords" content="Gutim, unica, creative, html">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Gutim | Ridding</title>
+    <title>Gutim | Riding</title>
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap"
@@ -19,7 +19,7 @@ require_once 'include/common.php';
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script 
     src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    
+
     <script
     src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
     integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
@@ -47,7 +47,7 @@ require_once 'include/common.php';
             <div class="row">
                 <div class="col-lg-12">
                     <div class="breadcrumb-text">
-                        <h2>Ridding</h2>
+                        <h2>Riding</h2>
                         </div>
                     </div>
                 </div>
@@ -85,7 +85,7 @@ require_once 'include/common.php';
                 try{
                 const response =
                         await fetch(
-                        serviceURL, { method: 'GET' }
+                        serviceURL, { method: 'GET'}
                         );
                 const data = await response.json();
                 var coordinates = data.parkingLots;
@@ -278,12 +278,14 @@ require_once 'include/common.php';
 
             var bookingID = '<?php echo $bookingID; ?>';
             var endTime = '<?php echo $endTime; ?>';
+            var scooterID = sessionStorage.getItem("scooterID");
             var parkingLotID = $('#parkingLotID').val();
             var bookingURL = "http://127.0.0.1:5001/booking/payment" + "/" + bookingID;
 
-            // console.log(bookingID);
-            // console.log(endTime);
-            // console.log(parkingLotID);
+            console.log(scooterID);
+            console.log(bookingID);
+            console.log(endTime);
+            console.log(parkingLotID);
             
             try {
                 const response = 
@@ -292,8 +294,9 @@ require_once 'include/common.php';
                     {
                     mode: 'cors',
                     method: 'POST',
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ endTime: endTime, parkingLotID: parkingLotID})
+                    crossDomain: true,
+                    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+                    body: JSON.stringify({ endTime: endTime, parkingLotID: parkingLotID, scooterID:scooterID})
                     }
                 );
 
@@ -308,6 +311,7 @@ require_once 'include/common.php';
             catch (error) {
                 showError
                 ('There is a problem making your booking, please try again later.<br />'+error);
+                console.log(error);
             }
         });
     //-- HTTP POST ends--
