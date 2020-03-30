@@ -2,7 +2,7 @@
 <html lang="zxx">
 <?php
 require_once 'include/common.php';
-?>
+?>    
 <head>
     <meta charset="UTF-8">
     <meta name="description" content="Ooster Ride Now">
@@ -244,8 +244,9 @@ require_once 'include/common.php';
 
             //session bookingid to pass to riding page
             $_SESSION['bookingID'] = $bookingID;
+            echo $bookingID;
         //-- get booking id ends --
-
+        
         //-- get startTime begin --
             date_default_timezone_set('Asia/Singapore');
             $startTime = date("Y-m-d H:i:s");
@@ -273,9 +274,7 @@ require_once 'include/common.php';
             var bookingID = '<?php echo $bookingID; ?>';
             var startTime = '<?php echo $startTime; ?>';
             var endTime = null;
-        
             sessionStorage.setItem("scooterID", scooterID);
-            
             var bookingURL = "http://127.0.0.1:5001/booking" + "/" + bookingID;
 
             console.log(bookingID);
@@ -291,7 +290,8 @@ require_once 'include/common.php';
                     {
                     mode: 'cors',
                     method: 'POST',
-                    headers: { "Content-Type": "application/json" },
+                    crossDomain: true,
+                    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
                     body: JSON.stringify({ scooterID: scooterID, parkingLotID: parkingLotID,startTime: startTime, endTime:endTime})
                     }
                 );

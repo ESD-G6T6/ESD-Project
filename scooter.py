@@ -33,27 +33,27 @@ class Scooter(db.Model):
     def json(self):
         return {"scooterID": self.scooterID, "parkingLotID": self.parkingLotID, "availabilityStatus": self.availabilityStatus}
 
-# return a list of all available scooters
-@app.route("/scooter")
-def get_all(): 
-    return jsonify({"scooters": [scooter.json() for scooter in Scooter.query.all()]})
+# # return a list of all available scooters
+# @app.route("/scooter")
+# def get_all(): 
+#     return jsonify({"scooters": [scooter.json() for scooter in Scooter.query.all()]})
 
-# return information about a scooter
-@app.route("/scooter/<string:scooterID>")
-def find_by_scooterID(scooterID):
-    scooter = Scooter.query.filter_by(scooterID=scooterID).first()
-    if scooter:
-        return jsonify(scooter.json())
-    return jsonify({"message": "Scooter not found."}), 404
+# # return information about a scooter
+# @app.route("/scooter/<string:scooterID>")
+# def find_by_scooterID(scooterID):
+#     scooter = Scooter.query.filter_by(scooterID=scooterID).first()
+#     if scooter:
+#         return jsonify(scooter.json())
+#     return jsonify({"message": "Scooter not found."}), 404
 
-# return a list of all scooters in a parking lot
-@app.route("/scooter/parkingLot/<string:parkingLotID>")
-def find_by_parkingLotID(parkingLotID):
-    parkingLot = Scooter.query.filter_by(parkingLotID=parkingLotID)
-    if parkingLot:
-        return jsonify({"scooters": [scooter.json() for scooter in parkingLot]})
+# # return a list of all scooters in a parking lot
+# @app.route("/scooter/parkingLot/<string:parkingLotID>")
+# def find_by_parkingLotID(parkingLotID):
+#     parkingLot = Scooter.query.filter_by(parkingLotID=parkingLotID)
+#     if parkingLot:
+#         return jsonify({"scooters": [scooter.json() for scooter in parkingLot]})
 
-    return jsonify({"message": "Parking lot not found."}), 404
+#     return jsonify({"message": "Parking lot not found."}), 404
 
 # receive the update from booking - update scooter function
 # update the parkingLotID and availabilityStatus of a scooter, return the info about the updated scooter record 

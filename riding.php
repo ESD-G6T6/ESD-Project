@@ -2,7 +2,7 @@
 <html lang="zxx">
 <?php
 require_once 'include/common.php';
-?>
+?>    
 <head>
     <meta charset="UTF-8">
     <meta name="description" content="Gutim Template">
@@ -19,7 +19,7 @@ require_once 'include/common.php';
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script 
     src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    
+
     <script
     src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
     integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
@@ -37,7 +37,6 @@ require_once 'include/common.php';
     <link rel="stylesheet" href="css/magnific-popup.css" type="text/css">
     <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
     <link rel="stylesheet" href="css/style.css" type="text/css">
-
 </head>
 
 <body>
@@ -86,7 +85,7 @@ require_once 'include/common.php';
                 try{
                 const response =
                         await fetch(
-                        serviceURL, { method: 'GET' }
+                        serviceURL, { method: 'GET'}
                         );
                 const data = await response.json();
                 var coordinates = data.parkingLots;
@@ -282,12 +281,11 @@ require_once 'include/common.php';
             var scooterID = sessionStorage.getItem("scooterID");
             var parkingLotID = $('#parkingLotID').val();
             var bookingURL = "http://127.0.0.1:5001/booking/payment" + "/" + bookingID;
-            
+
             console.log(scooterID);
             console.log(bookingID);
             console.log(endTime);
             console.log(parkingLotID);
-
             
             try {
                 const response = 
@@ -296,7 +294,8 @@ require_once 'include/common.php';
                     {
                     mode: 'cors',
                     method: 'POST',
-                    headers: { "Content-Type": "application/json" },
+                    crossDomain: true,
+                    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
                     body: JSON.stringify({ endTime: endTime, parkingLotID: parkingLotID, scooterID:scooterID})
                     }
                 );
