@@ -28,6 +28,8 @@
                 <input type="text" class="form-control" id="endTime" placeholder="Enter text">
                 <button id="submitButton">submit</button>
             </form>
+            <form id="notification">
+            </form>
         </div>
     </div>
 
@@ -60,13 +62,13 @@
             await fetch(
 		        serviceURL, {
 		        method: 'POST',
-                mode: 'cors',
+            mode: 'cors',
 		        headers: { "Content-Type": "application/json" },
 		        body: JSON.stringify({ scooterID: scooterIDData, parkingLotID: parkingLotIDData, endTime: endTimeData })
 	        });
             const info = await response.json();
             if (info.status == 201) {
-                $(".form-group").hide();
+                $("#endRide").hide();
                 $("#main-container").append(
                   "For scooter " +  scooterIDData + " parked at " + parkingLotIDData + ":" +
                   "<br> Your ride duration was for: " + info.duration + "minutes" +
@@ -86,27 +88,65 @@
                     });
                 },
                 onApprove: function(data, actions) {
-                    // This function captures the funds from the transaction.
-                    return actions.order.capture().then(function(details) {
-                    // This function shows a transaction success message to your buyer.
+                  // This function captures the funds from the transaction.
+                  return actions.order.capture().then(function(details) {
+                  // This function shows a transaction success message to your buyer.
                     alert('Transaction completed by ' + details.payer.name.given_name);
                     $("#paypal-button-container").hide();
-                    $("#main-container").append("<br> Thank you for riding with us! :----)");
-                    });
+                    $("#notification").append( 
+                      "<label >Enter email address if you want the details below to be emailed to you: </label>" + "<br>" + '<input type="text" class="form-control" id="email" placeholder="Enter text">' +
+                      '<button id="emailSubmitButton">submit</button>'
+                    );
+                  // here
+                });
+                  $("#notification").submit(async (event) => {
+                    event.preventDefault();
+                    // bookingID currently hardcoded
+                    var bookingID = "B0030";
+                    var serviceEmailURL = "http://127.0.0.1:5001/booking/notification/"+bookingID;
+
+                    var emailData = $('#email').val();
+                    var costData = '10';
+                    try{
+                      const responseEmail =
+                        await fetch(
+                          serviceEmailURL, {
+                          method: 'POST',
+                          mode: 'cors',
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ email: emailData , cost: costData})
+                      });
+                      const statusEmail = await responseEmail.json();
+                      if (statusEmail.status == 201){
+                        $("#main-container").append(statusEmail.message);
+                        $("#notification").hide();
+                      }
+
+                    }catch(error){
+                      showError("There is a problem sending email. <br/>" + error)
+                    }
+
+                  });
+
                 }
+                
                 }).render('#paypal-button-container');
+                //here
                 
             } else{
                 console.log(info);
                 showError(info.message);
             }
+            //here
 
         } catch (error) {
                 showError
               ('There is a problem.<br />'+ error);
-            }
+        }
 
     });
+    //here
+
 
   </script>
 

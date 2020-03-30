@@ -281,9 +281,9 @@ require_once 'include/common.php';
             var parkingLotID = $('#parkingLotID').val();
             var bookingURL = "http://127.0.0.1:5001/booking/payment" + "/" + bookingID;
 
-            console.log(bookingID);
-            console.log(endTime);
-            console.log(parkingLotID);
+            // console.log(bookingID);
+            // console.log(endTime);
+            // console.log(parkingLotID);
             
             try {
                 const response = 
