@@ -9,7 +9,7 @@ require_once 'include/common.php';
     <meta name="keywords" content="Gutim, unica, creative, html">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Gutim | Ridding</title>
+    <title>Gutim | Riding</title>
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap"
@@ -37,6 +37,7 @@ require_once 'include/common.php';
     <link rel="stylesheet" href="css/magnific-popup.css" type="text/css">
     <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
     <link rel="stylesheet" href="css/style.css" type="text/css">
+
 </head>
 
 <body>
@@ -47,7 +48,7 @@ require_once 'include/common.php';
             <div class="row">
                 <div class="col-lg-12">
                     <div class="breadcrumb-text">
-                        <h2>Ridding</h2>
+                        <h2>Riding</h2>
                         </div>
                     </div>
                 </div>
@@ -278,12 +279,15 @@ require_once 'include/common.php';
 
             var bookingID = '<?php echo $bookingID; ?>';
             var endTime = '<?php echo $endTime; ?>';
+            var scooterID = sessionStorage.getItem("scooterID");
             var parkingLotID = $('#parkingLotID').val();
             var bookingURL = "http://127.0.0.1:5001/booking/payment" + "/" + bookingID;
-
+            
+            console.log(scooterID);
             console.log(bookingID);
             console.log(endTime);
             console.log(parkingLotID);
+
             
             try {
                 const response = 
@@ -293,7 +297,7 @@ require_once 'include/common.php';
                     mode: 'cors',
                     method: 'POST',
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ endTime: endTime, parkingLotID: parkingLotID})
+                    body: JSON.stringify({ endTime: endTime, parkingLotID: parkingLotID, scooterID:scooterID})
                     }
                 );
 
@@ -308,6 +312,7 @@ require_once 'include/common.php';
             catch (error) {
                 showError
                 ('There is a problem making your booking, please try again later.<br />'+error);
+                console.log(error);
             }
         });
     //-- HTTP POST ends--

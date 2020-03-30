@@ -136,8 +136,8 @@ def update_booking(bookingID):
                     try:
                         booking.endTime = data["endTime"]
                         db.session.commit()
-                        scooterID = booking.scooterID
-                        parkingLotID = booking.parkingLotID
+                        # scooterID = booking.scooterID
+                        # parkingLotID = booking.parkingLotID
 
                     except Exception as e:
                         status = 500

@@ -203,7 +203,7 @@ require_once 'include/common.php';
                         <h4>Please enter your Scooter ID and Parking Lot ID</h4>
 
                         <!-- form section begins-->
-                        <form id="ridenowForm" method="POST">
+                        <form id="ridenowForm" action="ridenow.php" method="POST">
                             <div class="row">
                                 <div class="col-lg-6">
                                     
@@ -245,7 +245,7 @@ require_once 'include/common.php';
             //session bookingid to pass to riding page
             $_SESSION['bookingID'] = $bookingID;
         //-- get booking id ends --
-        
+
         //-- get startTime begin --
             date_default_timezone_set('Asia/Singapore');
             $startTime = date("Y-m-d H:i:s");
@@ -268,11 +268,14 @@ require_once 'include/common.php';
             event.preventDefault();
             $("#error").hide();
 
+            var scooterID = $('#scooterID').val();
+            var parkingLotID = $('#parkingLotID').val();
             var bookingID = '<?php echo $bookingID; ?>';
             var startTime = '<?php echo $startTime; ?>';
             var endTime = null;
-            var scooterID = $('#scooterID').val();
-            var parkingLotID = $('#parkingLotID').val();
+        
+            sessionStorage.setItem("scooterID", scooterID);
+            
             var bookingURL = "http://127.0.0.1:5001/booking" + "/" + bookingID;
 
             console.log(bookingID);
@@ -298,7 +301,7 @@ require_once 'include/common.php';
                 if (!data) {
                     showError('Booking failed.')
                 } else {
-                    window.location = 'http://localhost/ESD-Project/ridding.php';
+                    window.location = 'http://localhost/ESD-Project/riding.php';
                 }
             }
             catch (error) {
