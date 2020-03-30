@@ -164,7 +164,7 @@ def update_booking(bookingID):
             price = minutes * 0.10
             status = updateScooterStatus["status"]
             message = updateScooterStatus["message"]
-            updateScooterStatus = {"status": status, "message": message, "price": str(price), "duration": str(minutes)}
+            updateScooterStatus = {"status": status, "message": message, "price": str(round(price,2)), "duration": str(minutes)}
 
         updateScooterStatus = jsonify(updateScooterStatus)
         updateScooterStatus.headers.add('Access-Control-Allow-Origin', '*')
@@ -220,7 +220,7 @@ def send_notification(bookingID):
                 channel.basic_publish(exchange=exchangename, routing_key="notification.email", body=message,
                     properties=pika.BasicProperties(delivery_mode = 2)
                 )
-                result = {"status": status, "message": "Booking details for bookingID '{}' sent to notification..".format(bookingID)}
+                result = {"status": status, "message": "Your ride summary has been sent to your designated email, thank you !"}
                 print("email request sent to notification")
                 connection.close()
 

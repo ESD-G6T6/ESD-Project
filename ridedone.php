@@ -192,6 +192,34 @@ require_once 'include/common.php';
 
             <div class="contact-form">
                 <h4 >Ride Summary</h4>
+                "For scooter " +  scooterIDData + " parked at " + parkingLotIDData + ":" +
+                  "<br> Your ride duration was for: " + info.duration + "minutes" +
+                  "<br>  Your ride fare is: USD $" + info.price +
+                  "<br> Please make payment below <br>"
+                <script>
+                    paypal.Buttons({
+                    createOrder: function(data, actions) {
+                        // This function sets up the details of the transaction, including the amount and line item details.
+                        return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                            value: info.price
+                            }
+                        }]
+                        });
+                    },
+                    onApprove: function(data, actions) {
+                        // This function captures the funds from the transaction.
+                        return actions.order.capture().then(function(details) {
+                        // This function shows a transaction success message to your buyer.
+                        alert('Transaction completed by ' + details.payer.name.given_name);
+                        $("#paypal-button-container").hide();
+                        $("#main-container").append("<br> Thank you for riding with us! :----)");
+                        });
+                    }
+                    }).render();
+
+                </script>
 
             </div>
         </div>

@@ -2,14 +2,14 @@
 <html lang="zxx">
 <?php
 require_once 'include/common.php';
-?>    
+?>
 <head>
     <meta charset="UTF-8">
     <meta name="description" content="Gutim Template">
     <meta name="keywords" content="Gutim, unica, creative, html">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Gutim | Riding</title>
+    <title>Ooster | Riding</title>
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap"
@@ -19,7 +19,7 @@ require_once 'include/common.php';
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script 
     src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
+    
     <script
     src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
     integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
@@ -29,6 +29,9 @@ require_once 'include/common.php';
     src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
     integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
     crossorigin="anonymous"></script>
+
+    <!-- sandbox account -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AbEx5ggtWKaxfJJeM0xMO2Fy-jP_e_Grzz2ylsBFwd9X4UbcKzk-x7iUv-Bw-Wxsn1xBUuWThnNwg4BR"></script>
     
     <!-- Css Styles -->
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
@@ -37,6 +40,7 @@ require_once 'include/common.php';
     <link rel="stylesheet" href="css/magnific-popup.css" type="text/css">
     <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
     <link rel="stylesheet" href="css/style.css" type="text/css">
+
 </head>
 
 <body>
@@ -85,7 +89,7 @@ require_once 'include/common.php';
                 try{
                 const response =
                         await fetch(
-                        serviceURL, { method: 'GET'}
+                        serviceURL, { method: 'GET' }
                         );
                 const data = await response.json();
                 var coordinates = data.parkingLots;
@@ -186,11 +190,9 @@ require_once 'include/common.php';
     <!-- Contact Section Begin -->
     <section class="contact-section spad">
 
-        <div class="container">
-
+        <div class="container" id="main-container">
             <div class="contact-form">
-                <h4 >Please enter your Parking Lot ID to end your ride :</h4>
-
+                <h4>Please enter your Parking Lot ID to end your ride :</h4>
                 <!-- form section begins-->
                 <form id="parkingLotIDform" method="POST">
                     <div class="row">
@@ -200,7 +202,6 @@ require_once 'include/common.php';
                                 <span>Parking Lot ID :</span>
                             </div>
                             <input type="text" placeholder="P0001" id="parkingLotID" name="parkingLotID" required>
-
                             <button type = "submit" class="btn btn-dark" >Send</button>
 
                         </div>
@@ -211,11 +212,17 @@ require_once 'include/common.php';
                 <div class="contact-option">
                     <span> Duration :</span>
                 </div>
-                <h1><time>00:00:00</time></h1>
 
+                <div id="timestamp">
+                    <h1><time>00:00:00</time></h1>
+                </div>
             </div>
         </div>
-                
+        <div class="container">
+            <div id="ridesummary"></div>
+            <div id="paypal-button-container"> </div>
+            <form id="notification"></form>
+        </div>
     </section>
     <!-- Contact Section End -->
     
@@ -281,11 +288,12 @@ require_once 'include/common.php';
             var scooterID = sessionStorage.getItem("scooterID");
             var parkingLotID = $('#parkingLotID').val();
             var bookingURL = "http://127.0.0.1:5001/booking/payment" + "/" + bookingID;
+            
+            // console.log(scooterID);
+            // console.log(bookingID);
+            // console.log(endTime);
+            // console.log(parkingLotID);
 
-            console.log(scooterID);
-            console.log(bookingID);
-            console.log(endTime);
-            console.log(parkingLotID);
             
             try {
                 const response = 
@@ -294,24 +302,100 @@ require_once 'include/common.php';
                     {
                     mode: 'cors',
                     method: 'POST',
-                    crossDomain: true,
-                    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ endTime: endTime, parkingLotID: parkingLotID, scooterID:scooterID})
                     }
                 );
 
-                const data = await response.json();
+                const info = await response.json();
+                // console.log(info);
+                // console.log(info.price);
+                // sessionStorage.setItem("price", info.price);
 
-                if (!data) {
-                    showError('Booking failed.')
-                } else {
-                    window.location = 'http://localhost/ESD-Project/ridedone.php';
+                if (info.status == 201) {
+                    // console.log(info.price);
+                    var cost = info.price;
+                    sessionStorage.setItem("cost", cost);
+                    
+                    $("#main-container").hide();
+                    $("#ridesummary").append(
+                        
+                        "<h4>For scooter <bold>" + scooterID + "</bold> parked at " + parkingLotID + ":</h4>" +
+                        "<br> <div class='contact-option'><span> Your ride duration was for : </span> </div>" + info.duration + " minutes <br>" +
+                        "<br> <div class='contact-option'><span> Your ride fare is : </span> </div> SGD $ " + info.price + "<br>" + "<br>"
+                        // "<br> <div class='contact-option' id='paymentsuccess'><span>Please make payment below : </span> </div> <br>"
+                    );
+                    
+                    paypal.Buttons({
+                    createOrder: function(data, actions) {
+                        // This function sets up the details of the transaction, including the amount and line item details.
+                        return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                            value: info.price
+                            }
+                        }]
+                        });
+                    },
+                    onApprove: function(data, actions) {
+                        // This function captures the funds from the transaction.
+                        return actions.order.capture().then(function(details) {
+                        // This function shows a transaction success message to your buyer.
+                        alert('Transaction completed by ' + details.payer.name.given_name);
+                        $("#paypal-button-container").hide();
+                        $("#paymentsuccess").hide();
+                        
+                        $("#notification").append(
+                            "<div class='contact-option'><span>Enter email address if you want the details below to be emailed to you: </span>" + "<br>" + '<input type="text" class="form-control" id="email" placeholder="Enter text">' +
+                            '<br><button class="btn btn-dark" id="emailSubmitButton">Submit</button>'
+                        );
+                        });
+
+                    }
+                    }).render('#paypal-button-container');
                 }
+                else{
+                    console.log(info);
+                    showError(info.message);
+                }
+                // if (!info) {
+                //     showError('Booking failed.')
+                // } else {
+                //     window.location = 'http://localhost/ESD-Project/ridedone.php';
+                // }
             }
             catch (error) {
                 showError
                 ('There is a problem making your booking, please try again later.<br />'+error);
                 console.log(error);
+            }
+        });
+        $("#notification").submit(async (event) => {
+            event.preventDefault();
+            // bookingID currently hardcoded
+            var bookingID = '<?php echo $bookingID; ?>';
+            var serviceEmailURL = "http://127.0.0.1:5001/booking/notification/"+bookingID;
+            // console.log(sessionStorage.getItem("x"));
+            var emailData = $('#email').val();
+            var costData = sessionStorage.getItem("cost");
+            try{
+            const responseEmail =
+                await fetch(
+                serviceEmailURL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: emailData , cost: costData})
+            });
+            const statusEmail = await responseEmail.json();
+            if (statusEmail.status == 201){
+                alert(statusEmail.message);
+                window.location = 'http://localhost/ESD-Project/index.php';
+                $("#notification").hide();
+            }
+
+            }catch(error){
+            showError("There is a problem sending email. <br/>" + error)
             }
         });
     //-- HTTP POST ends--
