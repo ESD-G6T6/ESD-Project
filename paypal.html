@@ -65,8 +65,10 @@
             mode: 'cors',
 		        headers: { "Content-Type": "application/json" },
 		        body: JSON.stringify({ scooterID: scooterIDData, parkingLotID: parkingLotIDData, endTime: endTimeData })
-	        });
+            });
+            
             const info = await response.json();
+
             if (info.status == 201) {
                 $("#endRide").hide();
                 $("#main-container").append(
@@ -75,16 +77,17 @@
                   "<br>  Your ride fare is: USD $" + info.price +
                   "<br> Please make payment below <br>"
                 );
+
                 console.log(info);
+
                 paypal.Buttons({
                 createOrder: function(data, actions) {
                     // This function sets up the details of the transaction, including the amount and line item details.
                     return actions.order.create({
-                    purchase_units: [{
-                        amount: {
-                        value: info.price
-                        }
-                    }]
+                      purchase_units: [{
+                          amount: {
+                          value: info.price }
+                      }]
                     });
                 },
                 onApprove: function(data, actions) {
@@ -95,38 +98,10 @@
                     $("#paypal-button-container").hide();
                     $("#notification").append( 
                       "<label >Enter email address if you want the details below to be emailed to you: </label>" + "<br>" + '<input type="text" class="form-control" id="email" placeholder="Enter text">' +
-                      '<button id="emailSubmitButton">submit</button>'
+                      '<button id="submit">submit</button>'
                     );
                   // here
                 });
-                  $("#notification").submit(async (event) => {
-                    event.preventDefault();
-                    // bookingID currently hardcoded
-                    var bookingID = "B0030";
-                    var serviceEmailURL = "http://127.0.0.1:5001/booking/notification/"+bookingID;
-
-                    var emailData = $('#email').val();
-                    var costData = '10';
-                    try{
-                      const responseEmail =
-                        await fetch(
-                          serviceEmailURL, {
-                          method: 'POST',
-                          mode: 'cors',
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ email: emailData , cost: costData})
-                      });
-                      const statusEmail = await responseEmail.json();
-                      if (statusEmail.status == 201){
-                        $("#main-container").append(statusEmail.message);
-                        $("#notification").hide();
-                      }
-
-                    }catch(error){
-                      showError("There is a problem sending email. <br/>" + error)
-                    }
-
-                  });
 
                 }
                 
@@ -145,7 +120,36 @@
         }
 
     });
-    //here
+    $("#notification").submit(async (event) => {
+        event.preventDefault();
+        // bookingID currently hardcoded
+        var bookingID = "B0030";
+        var serviceEmailURL = "http://127.0.0.1:5001/booking/notification/" + bookingID;
+
+        var emailData = $('#email').val();
+        var costData = "0.50";
+
+
+        try{
+          const responseEmail =
+            await fetch(
+              serviceEmailURL, {
+              method: 'POST',
+              mode: 'cors',
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: emailData , cost: costData})
+          });
+          const statusEmail = await responseEmail.json();
+          console.log(statusEmail.message);
+          if (statusEmail.status == 201){
+            $("#main-container").append(statusEmail.message);
+          }
+
+        }catch(error){
+          showError("There is a problem sending email. <br/>" + error)
+        }
+
+      });
 
 
   </script>
