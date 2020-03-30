@@ -7,34 +7,35 @@ import pika
 
 app = Flask(__name__)
 
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
-app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USERNAME'] = 'esdg6t6@gmail.com'
-app.config['MAIL_PASSWORD'] = 'scooter!g1t6'
+app.config['MAIL_PASSWORD'] = 'scooter!g6t6'
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+app.config['DEBUG'] = True
 
 mail = Mail(app)
-
 
 def sendEmail(data):
     status = 201
     result = {}
     with app.app_context():
-        content = "Dear Rider, \n\n Here is your ride summary for Booking ID " + data['bookingID']  + ": \n Scooter used: " + data['scooterID'] + " \n Start Time of Ride: " + data['startTime'] + "\n End Time of Ride: " + data['endTime'] + "\n Cost of Ride: " + data['cost'] + "\n\n Hope you'll ride with us again! :)"
+        content = "Dear Rider, \n\n Here is your ride summary for Booking ID " + data['bookingID']  + ": \n\t Scooter used: " + data['scooterID'] + " \n\t Start Time of Ride: " + data['startTime'] + "\n\t End Time of Ride: " + data['endTime'] + "\n\t Cost of Ride: $" + data['cost'] + "\n\n Hope you'll ride with us again! :)"
 
         subject = "Ride payment details for Booking ID " + data['bookingID'] 
 
-    try:
-        msg = Message (subject, sender = 'esdg6t6@gmail.com', recipients = [data['email']])
-        msg.body = content
-        mail.send(msg)
+        try:
+            msg = Message(subject, sender="esdg6t6@gmail.com", recipients=[data['email']])
+            msg.body = content
+            mail.send(msg)
+            result = {"status": status, "message": "Payment summary sent successfully"}
+        except:
+            status = 400
+            result = {"status": status, "message": "Unable to send email"}
 
-        result = {"status": status, "message": "Payment summary sent successfully"}
-    except:
-        status = 400
-        result = {"status": status, "message": "Unable to send email"}
-    
     print(result)
+    print()
 
 def receiveMessage():
     hostname = "localhost"
@@ -46,7 +47,7 @@ def receiveMessage():
     exchangename="notification_direct"
     channel.exchange_declare(exchange=exchangename, exchange_type='direct')
 
-    channelqueue = channel.queue_declare(queue='email', exclusive=True)
+    channelqueue = channel.queue_declare(queue='email', durable=True)
     queue_name = channelqueue.method.queue
     channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='notification.email')
     
@@ -61,7 +62,6 @@ def callback(channel, method, properties, body): # required signature for the ca
 
     json.dump(data, sys.stdout, default=str) # convert the JSON object to a string and print out on screen
     print() 
-
 
 if __name__ == '__main__': 
     print("This is notification...")
