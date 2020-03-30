@@ -172,52 +172,59 @@ def update_booking(bookingID):
     return result
 
     # sends content of email to be sent to user to notification.py via AMQP 
-    @app.route("/booking/notification/<string:bookingID>", methods=['POST'])
-    def send_notification(bookingID):
-        status = 201
-        result = {}
+@app.route("/booking/notification/<string:bookingID>", methods=['POST'])
+def send_notification(bookingID):
+    status = 201
+    result = {}
 
-        # check if booking exists
-        if (not (Booking.query.filter_by(bookingID=bookingID).first())):
+    # check if booking exists
+    if (not (Booking.query.filter_by(bookingID=bookingID).first())):
+        status = 400
+        result = {"status": status, "message": "A booking with bookingID '{}' does not exists. E-mail cannot be sent.".format(bookingID)}
+    else:
+        # check if booking has ended
+        bookingData = Booking.query.filter_by(bookingID=bookingID).first()
+        booking = json.dumps(bookingData, default=str)
+        print(booking)
+        dbEndTime = bookingData.endTime
+        if (dbEndTime == None):
             status = 400
-            result = {"status": status, "message": "A booking with bookingID '{}' does not exists. E-mail cannot be sent.".format(bookingID)}
+            result = {"status": status, "message": "A booking with bookingID '{}' has not ended.".format(bookingID)}
         else:
-            # check if booking has ended
-            booking = Booking.query.filter_by(bookingID=bookingID).first()
-            dbEndTime = booking.endTime
-            if (dbEndTime == None):
+            data = request.get_json()
+            if (data['email'] == ""):
                 status = 400
-                result = {"status": status, "message": "A booking with bookingID '{}' has not ended.".format(bookingID)}
+                result = {"status": status, "message": "Invalid email entered!"}
+
             else:
-                data = request.get_json()
-                if (data['email'] == ""):
-                    status = 400
-                    result = {"status": status, "message": "Invalid email entered!"}
+                hostname = "localhost"
+                port = 5672
 
-                else:
-                    hostname = "localhost"
-                    port = 5672
+                connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port))
 
-                    connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port))
+                channel = connection.channel()
+                exchangename="notification_direct"
+                channel.exchange_declare(exchange=exchangename, exchange_type='direct')
 
-                    channel = connection.channel()
-                    exchangename="notification_direct"
-                    channel.exchange_declare(exchange=exchangename, exchange_type='direct')
+                emailData=dict()
+                emailData['cost'] = data['cost']
+                emailData['email'] = data['email']
+                emailData['bookingID'] =  bookingData.bookingID
+                emailData['scooterID'] =  bookingData.scooterID
+                emailData['startTime'] =  bookingData.startTime
+                emailData['endTime'] =  bookingData.endTime
 
-                    booking['cost'] = data['cost']
-                    booking['email'] = data['email']
+                message = json.dumps(emailData, default=str)
+                channel.queue_declare(queue='email', durable=True)
+                channel.queue_bind(exchange=exchangename, queue='email', routing_key='notification.email')
+                channel.basic_publish(exchange=exchangename, routing_key="notification.email", body=message,
+                    properties=pika.BasicProperties(delivery_mode = 2)
+                )
+                result = {"status": status, "message": "Booking details for bookingID '{}' sent to notification..".format(bookingID)}
+                print("email request sent to notification")
+                connection.close()
 
-                    message = json.dumps(booking, default=str)
-                    channel.queue_declare(queue='email', durable=True)
-                    channel.queue_bind(exchange=exchangename, queue='email', routing_key='notification.email')
-                    channel.basic_publish(exchange=exchangename, routing_key="notification.email", body=message,
-                        properties=pika.BasicProperties(delivery_mode = 2,)
-                    )
-                    result = {"status": status, "message": "Booking details for bookingID '{}' sent to notification..".format(bookingID)}
-                    print("email request sent to notification")
-                    connection.close()
-
-        return result
+    return result
 
 
 
