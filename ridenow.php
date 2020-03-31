@@ -216,7 +216,7 @@ require_once 'include/common.php';
                                         <span>Parking Lot ID :</span>
                                     </div>
                                     <input type="text" placeholder="P0001" id="parkingLotID" name="parkingLotID" required>
-                                    <button type = "submit" class="btn btn-dark" >Send</button>
+                                    <button type = "submit" class="btn btn-dark" name = "startride" >Start Ride</button>
                                 </div>
                             </div>
                         </form>
@@ -246,13 +246,9 @@ require_once 'include/common.php';
             $_SESSION['bookingID'] = $bookingID;
         //-- get booking id ends --
         
-        //-- get startTime begin --
-            date_default_timezone_set('Asia/Singapore');
-            $startTime = date("Y-m-d H:i:s");
-        //-- get startTime end --
-
         ?>
     <!-- get bookingID, startTime ends-->
+
 
     <script>
     //-- HTTP POST begins--
@@ -263,7 +259,17 @@ require_once 'include/common.php';
             .append("<label>"+message+"</label>");
         }
 
-        $("#ridenowForm").submit(async(event) => {  
+        $("#ridenowForm").submit(async(event) => {
+
+            var UNIX_timestamp = Math.round((new Date()).getTime() / 1000);        
+            var date = new Date(UNIX_timestamp * 1000);
+            var year = date.getFullYear();
+            var month = ('0' + (date.getMonth() + 1)).slice(-2);
+            var dates = ('0' + date.getDate()).slice(-2);
+            var hours = date.getHours();
+            var minutes = "0" + date.getMinutes();
+            var seconds = "0" + date.getSeconds();
+            var formattedTime = year + '-' + month + '-' + dates + ' ' + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
             
             event.preventDefault();
             $("#error").hide();
@@ -271,7 +277,7 @@ require_once 'include/common.php';
             var scooterID = $('#scooterID').val();
             var parkingLotID = $('#parkingLotID').val();
             var bookingID = '<?php echo $bookingID; ?>';
-            var startTime = '<?php echo $startTime; ?>';
+            var startTime = formattedTime;
             var endTime = null;
             sessionStorage.setItem("scooterID", scooterID);
             var bookingURL = "http://127.0.0.1:5001/booking" + "/" + bookingID;
@@ -330,7 +336,7 @@ require_once 'include/common.php';
                 <div class="col-md-4">
                     <div class="contact-option">
                         <span>Email</span>
-                        <p>contactcompany@Ooster.com</p>
+                        <p>esdg6t6@gmail.com</p>
                     </div>
                 </div>
             </div>

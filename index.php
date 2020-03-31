@@ -72,7 +72,7 @@
             <div class="row">
                 <div class="col-lg-8">
                     <div class="hero-text">
-                        <span>OOSTER</span>
+                        <span>OOTER</span>
                         <h1>Your Ride - Electrified</h1>
 
                         <a href="./ridenow.php" class="primary-btn signup-btn">Ride now</a>
@@ -175,7 +175,7 @@
                 <div class="col-md-4">
                     <div class="contact-option">
                         <span>Email</span>
-                        <p>contactcompany@Ooster.com</p>
+                        <p>esdg6t6@gmail.com</p>
                     </div>
                 </div>
             </div>

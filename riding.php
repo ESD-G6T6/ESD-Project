@@ -202,7 +202,7 @@ require_once 'include/common.php';
                                 <span>Parking Lot ID :</span>
                             </div>
                             <input type="text" placeholder="P0001" id="parkingLotID" name="parkingLotID" required>
-                            <button type = "submit" class="btn btn-dark" >Send</button>
+                            <button type = "submit" class="btn btn-dark" >End Ride</button>
 
                         </div>
                     </div>
@@ -232,11 +232,6 @@ require_once 'include/common.php';
     //-- get booking id begin --
         $bookingID = $_SESSION['bookingID'];
     //-- get booking id ends --
-    
-    //-- get endTime begin --
-        date_default_timezone_set('Asia/Singapore');
-        $endTime = date("Y-m-d H:i:s");
-    //-- get endTime end --
 
     ?>
     <script>
@@ -277,14 +272,21 @@ require_once 'include/common.php';
         }
 
         $("#parkingLotIDform").submit(async(event) => {  
-            //Prevents screen from refreshing when submitting
-            //event is referring to the submit event
+            var UNIX_timestamp = Math.round((new Date()).getTime() / 1000);        
+            var date = new Date(UNIX_timestamp * 1000);
+            var year = date.getFullYear();
+            var month = ('0' + (date.getMonth() + 1)).slice(-2);
+            var dates = ('0' + date.getDate()).slice(-2);
+            var hours = date.getHours();
+            var minutes = "0" + date.getMinutes();
+            var seconds = "0" + date.getSeconds();
+            var formattedTime = year + '-' + month + '-' + dates + ' ' + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
             
             event.preventDefault();
             $("#error").hide();
 
             var bookingID = '<?php echo $bookingID; ?>';
-            var endTime = '<?php echo $endTime; ?>';
+            var endTime = formattedTime;
             var scooterID = sessionStorage.getItem("scooterID");
             var parkingLotID = $('#parkingLotID').val();
             var bookingURL = "http://127.0.0.1:5001/booking/payment" + "/" + bookingID;
@@ -421,7 +423,7 @@ require_once 'include/common.php';
                 <div class="col-md-4">
                     <div class="contact-option">
                         <span>Email</span>
-                        <p>contactcompany@Ooster.com</p>
+                        <p>esdg6t6@gmail.com</p>
                     </div>
                 </div>
             </div>
