@@ -164,7 +164,7 @@ def update_booking(bookingID):
             price = minutes * 0.10
             status = updateScooterStatus["status"]
             message = updateScooterStatus["message"]
-            updateScooterStatus = {"status": status, "message": message, "price": str(round(price,2)), "duration": str(minutes)}
+            updateScooterStatus = {"status": status, "message": message, "price": str(round(price,2)), "duration": str(round(minutes,2))}
 
         updateScooterStatus = jsonify(updateScooterStatus)
         updateScooterStatus.headers.add('Access-Control-Allow-Origin', '*')

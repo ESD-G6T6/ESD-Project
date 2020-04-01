@@ -31,7 +31,7 @@ require_once 'include/common.php';
     crossorigin="anonymous"></script>
 
     <!-- sandbox account -->
-    <script src="https://www.paypal.com/sdk/js?client-id=AbEx5ggtWKaxfJJeM0xMO2Fy-jP_e_Grzz2ylsBFwd9X4UbcKzk-x7iUv-Bw-Wxsn1xBUuWThnNwg4BR"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=AbEx5ggtWKaxfJJeM0xMO2Fy-jP_e_Grzz2ylsBFwd9X4UbcKzk-x7iUv-Bw-Wxsn1xBUuWThnNwg4BR&disable-funding=card"></script>
     
     <!-- Css Styles -->
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
@@ -328,8 +328,14 @@ require_once 'include/common.php';
                         // "<br> <div class='contact-option' id='paymentsuccess'><span>Please make payment below : </span> </div> <br>"
                     );
                     
-                    paypal.Buttons({
-                    createOrder: function(data, actions) {
+                    paypal.Buttons(
+                    {style: {
+                        layout:  'vertical',
+                        color:   'gold',
+                        shape:   'pill',
+                        label:   'paypal'}
+                    },
+                    { createOrder: function(data, actions) {
                         // This function sets up the details of the transaction, including the amount and line item details.
                         return actions.order.create({
                         purchase_units: [{
@@ -348,7 +354,7 @@ require_once 'include/common.php';
                         $("#paymentsuccess").hide();
                         
                         $("#notification").append(
-                            "<div class='contact-option'><span>Enter email address if you want the details below to be emailed to you: </span>" + "<br>" + '<input type="text" class="form-control" id="email" placeholder="Enter text">' +
+                            "<div class='contact-option'><span>Enter your email address to receive the details above: </span>" + "<br>" + '<input type="text" class="form-control" id="email" placeholder="Enter text">' +
                             '<br><button class="btn btn-dark" id="emailSubmitButton">Submit</button>'
                         );
                         });
