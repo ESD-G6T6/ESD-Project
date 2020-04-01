@@ -220,7 +220,7 @@ def send_notification(bookingID):
                 channel.basic_publish(exchange=exchangename, routing_key="notification.email", body=message,
                     properties=pika.BasicProperties(delivery_mode = 2)
                 )
-                result = {"status": status, "message": "Your ride summary has been sent to your designated email, thank you !"}
+                result = {"status": status, "message": "Your ride summary has been sent to your designated email. <br> Thank you!"}
                 print("email request sent to notification")
                 connection.close()
 
