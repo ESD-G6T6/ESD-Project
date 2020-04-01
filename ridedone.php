@@ -49,7 +49,7 @@ require_once 'include/common.php';
                     <div class="breadcrumb-text">
                         <h2>Ride Completed</h2>
                         <div class="breadcrumb-option">
-                            <a href="./index.php"><i class="fa fa-home"></i>Home</a>
+                            <a href="./index.php"><i class="fa fa-home"></i> Home</a>
                         </div>
                     </div>
                 </div>
@@ -60,7 +60,7 @@ require_once 'include/common.php';
 
     <style>
         #map{
-        height:700px;
+        height:600px;
         width:100%;
         }
     </style>
@@ -70,113 +70,127 @@ require_once 'include/common.php';
         <script>
             function showError(message) {
                     // Display an error under the main container
-                    $('#map')
-                        .append("<label>"+message+"</label>");
+                    $('#map').append("<label>"+message+"</label>");
             }
-        
+            // var map, infoWindow;
             function initMap(){
-            var markers = [];
-            var latitude = [] ;
-            var longitude=[] ;
-            var scooterNumber=[] ;
-            var parkingLotID=[];
-            
-            $(async() => {           
-                // connect to parkingLot microservice
-                var serviceURL = "http://127.0.0.1:5002/parkingLot";
-                try{
-                const response =
-                        await fetch(
-                        serviceURL, { method: 'GET' }
-                        );
-                const data = await response.json();
-                var coordinates = data.parkingLots;
-                //console.log(coordinates);
-                if (!coordinates || !coordinates.length) {
-                    showError('coordinates list empty or undefined.');
-                } else{
-                    for (const coordinate of coordinates) {
-                    latitude.push(coordinate.latitude);
-                    longitude.push(coordinate.longitude);
-                    scooterNumber.push(coordinate.numberOfAvailableScooters);
-                    parkingLotID.push(coordinate.parkingLotID);
-                    }
-                    // console.log(latitude);
-                    // console.log(longitude);
-                    // console.log(scooterNumber);
-                    // console.log(markers);
+                var markers = [];
+                var latitude = [] ;
+                var longitude=[] ;
+                var scooterNumber=[] ;
+                var parkingLotID=[];
+                
+                $(async() => {           
+                    // connect to parkingLot microservice
+                    var serviceURL = "http://127.0.0.1:5002/parkingLot";
+                    try{
+                        const response =
+                            await fetch(
+                            serviceURL, { method: 'GET' }
+                            );
+                        const data = await response.json();
+                        var coordinates = data.parkingLots;
+                        //console.log(coordinates);
+                        if (!coordinates || !coordinates.length) {
+                            showError('coordinates list empty or undefined.');
+                        } else{
+                            for (const coordinate of coordinates) {
+                            latitude.push(coordinate.latitude);
+                            longitude.push(coordinate.longitude);
+                            scooterNumber.push(coordinate.numberOfAvailableScooters);
+                            parkingLotID.push(coordinate.parkingLotID);
+                            }
 
-                    for (i=0; i<latitude.length;i++){
-                    if(i==0){
-                        markers.push({
-                        coords:{lat:latitude[i],
-                                lng:longitude[i]},
-                        content:'Available Scooters: ' + scooterNumber[i] + '</br> Parking Lot ID: ' + parkingLotID[i]
-                        //icon:'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'
+                            var image = {url: './img/escooter.png', scaledSize: new google.maps.Size(75, 90)}
+                            for (var i = 0; i < latitude.length; i++){
+                                if(i==0){
+                                    markers.push({
+                                    coords:{lat:latitude[i],
+                                            lng:longitude[i]},
+                                    content:'Available Scooters: ' + scooterNumber[i] + '</br> Parking Lot ID: ' + parkingLotID[i],
+                                    icon: image
+                                    });
+                                }
+
+                                else{
+                                    markers.push({
+                                    coords:{lat:latitude[i],
+                                            lng:longitude[i]},
+                                    content:'Available Scooters: ' + scooterNumber[i] + '</br> Parking Lot ID: ' + parkingLotID[i],
+                                    icon: image
+                                    });
+
+                                }
+                            }
+
+                            var options = {
+                            zoom:12.5,
+                            center:{lat:1.3521,lng:103.8198}
+                            }
+
+                            // New map
+                            var map = new google.maps.Map(document.getElementById('map'), options);
+
+                            for(var i = 0;i < markers.length;i++){
+                            addMarker(markers[i]);
+                            }
+
+                            function addMarker(props){
+                                var marker = new google.maps.Marker({
+                                    position: props.coords,
+                                    map: map,
+                                    icon:props.icon
+                                });
+
+                                // Check for customicon
+                                if(props.icon){
+                                    // Set icon image
+                                    marker.setIcon(props.icon);
+                                }
+
+                                // Check content
+                                if(props.content){
+                                    var infoWindow = new google.maps.InfoWindow({
+                                    content:props.content
+                                    });
+
+                                    marker.addListener('click', function(){
+                                    infoWindow.open(map, marker);
+                                    });
+                                }
+                            }
+                        }
+                    }catch(error){
+                    // Errors when calling the service; such as network error, service offline, etc
+                    showError('There is a problem retrieving coordinates data, please try again later.<br />'+error);
+                    }
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(function(position) {
+                            var pos = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude
+                            };
+                            var infoWindow2 = new google.maps.InfoWindow;
+                            infoWindow2.setPosition(pos);
+                            infoWindow2.setContent('You are here!');
+                            infoWindow2.open(map);
+                            map.setCenter(pos);
+                        }, function() {
+                            handleLocationError(true, infoWindow2, map.getCenter());
                         });
-                    }
-
-                    else{
-                        markers.push({
-                        coords:{lat:latitude[i],
-                                lng:longitude[i]},
-                        content:'Available Scooters: ' + scooterNumber[i] + '</br> Parking Lot ID: ' + parkingLotID[i],
-                        });
-
-                    }
-                    }
-                    // console.log(latitude);
-                    // console.log(longitude);
-                    // console.log(scooterNumber);
-                    console.log(markers);
-
-                    var options = {
-                    zoom:11.2,
-                    center:{lat:1.3521,lng:103.8198}
-                    }
-
-                    // New map
-                    var map = new google.maps.Map(document.getElementById('map'), options);
-
-                    for(var i = 0;i < markers.length;i++){
-                    // Add marker
-                    addMarker(markers[i]);
-                    }
-
-                    // Add Marker Function
-                    function addMarker(props){
-                    var marker = new google.maps.Marker({
-                        position: props.coords,
-                        map: map,
-                        icon:props.iconImage
-                    });
-
-                    // Check for customicon
-                    if(props.iconImage){
-                        // Set icon image
-                        marker.setIcon(props.iconImage);
-                    }
-
-                    // Check content
-                    if(props.content){
-                        var infoWindow = new google.maps.InfoWindow({
-                        content:props.content
-                        });
-
-                        marker.addListener('click', function(){
-                        infoWindow.open(map, marker);
-                        });
-                    }
-                    }
-
-                }
-                }catch(error){
-                // Errors when calling the service; such as network error, 
-                // service offline, etc
-                showError('There is a problem retrieving coordinates data, please try again later.<br />'+error);
-                }
-            }); //end of async function
+                        } else {
+                        // Browser doesn't support Geolocation
+                            handleLocationError(false, infoWindow2, map.getCenter());
+                        }
+                }); //end of async function
             }//end of init func
+            function handleLocationError(browserHasGeolocation, infoWindow2, pos) {
+                infoWindow2.setPosition(pos);
+                infoWindow2.setContent(browserHasGeolocation ?
+                                        'Error: The Geolocation service failed.' :
+                                        'Error: Your browser doesn\'t support geolocation.');
+                infoWindow2.open(map);
+            }
         </script>
 
         <script async defer
@@ -197,8 +211,8 @@ require_once 'include/common.php';
                   "<br>  Your ride fare is: USD $" + info.price +
                   "<br> Please make payment below <br>"
                 <script>
-                    paypal.Buttons({
-                    createOrder: function(data, actions) {
+                    paypal.Buttons(
+                    {createOrder: function(data, actions) {
                         // This function sets up the details of the transaction, including the amount and line item details.
                         return actions.order.create({
                         purchase_units: [{
@@ -247,7 +261,7 @@ require_once 'include/common.php';
                 <div class="col-md-4">
                     <div class="contact-option">
                         <span>Email</span>
-                        <p>contactcompany@Ooster.com</p>
+                        <p>esdg6t6@gmail.com</p>
                     </div>
                 </div>
             </div>

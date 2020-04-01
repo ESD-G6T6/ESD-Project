@@ -24,7 +24,7 @@
             $('#map')
                 .append("<label>"+message+"</label>");
     }
-    var map, infoWindow;
+    // var infoWindow;
     function initMap(){
       var markers = [];
       var latitude = [] ;
@@ -42,7 +42,9 @@
                 );
           const data = await response.json();
           var coordinates = data.parkingLots;
-          //console.log(coordinates);
+
+          console.log(coordinates);
+
           if (!coordinates || !coordinates.length) {
             showError('coordinates list empty or undefined.');
           } else{
@@ -52,22 +54,17 @@
               scooterNumber.push(coordinate.numberOfAvailableScooters);
               parkingLotID.push(coordinate.parkingLotID);
             }
-            // console.log(latitude);
-            // console.log(longitude);
-            // console.log(scooterNumber);
-            // console.log(markers);
-            //var image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
-            var image = {url: 'C:/Users/ASUS/Documents/ESD-Project/img/escooter.png', scaledSize: new google.maps.Size(75, 90)}
-            for (i=0; i<latitude.length;i++){
+            // console.log(parkingLotID.length)
+            var image = {url: './img/escooter.png', scaledSize: new google.maps.Size(75, 90)}
+            for (var i=0; i<parkingLotID.length; i++){
               if(i==0){
                 markers.push({
                   coords:{lat:latitude[i],
                           lng:longitude[i]},
                   content:'Available Scooters: ' + scooterNumber[i] + '</br> Parking Lot ID: ' + parkingLotID[i],
-                  icon : image
+                  icon: image
                 });
               }
-
               else{
                 markers.push({
                   coords:{lat:latitude[i],
@@ -75,13 +72,10 @@
                   content:'Available Scooters: ' + scooterNumber[i] + '</br> Parking Lot ID: ' + parkingLotID[i],
                   icon: image
                 });
-
               }
             }
-            // console.log(latitude);
-            // console.log(longitude);
-            // console.log(scooterNumber);
-            console.log(markers);
+
+            // console.log(markers);
 
             var options = {
               zoom:12.5,
@@ -91,7 +85,7 @@
             // New map
             var map = new google.maps.Map(document.getElementById('map'), options);
 
-            for(var i = 0;i < markers.length;i++){
+            for(var i = 0; i < markers.length; i++){
               // Add marker
               addMarker(markers[i]);
             }
@@ -101,19 +95,22 @@
               var marker = new google.maps.Marker({
                 position: props.coords,
                 map: map,
-                icon:props.icon
+                icon: props.icon,
+                content: props.content
               });
 
               // Check for customicon
-              if(props.icon){
-                // Set icon image
-                marker.setIcon(props.icon);
-              }
+              // if(props.icon){
+              //   // Set icon image
+              //   marker.setIcon(props.icon);
+              // }
 
               // Check content
+              console.log(props.content)
+
               if(props.content){
-                infoWindow = new google.maps.InfoWindow({
-                  content:props.content
+                var infoWindow = new google.maps.InfoWindow({
+                  content: props.content
                 });
 
                 marker.addListener('click', function(){

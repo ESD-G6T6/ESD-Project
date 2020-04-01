@@ -30,7 +30,7 @@ USE `parkingLot`;
 -- Table structure for table `parkingLot`
 --
 
-DROP TABLE IF EXISTS `parking_lot`;
+DROP TABLE IF EXISTS `parkingLot`;
 CREATE TABLE IF NOT EXISTS `parkingLot` (
   `parkingLotID` varchar(5) NOT NULL,
   `numberOfAvailableScooters` int(3) NOT NULL,

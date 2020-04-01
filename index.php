@@ -96,11 +96,11 @@
                 <div class="col-lg-6">
                     <div class="about-text">
                         <h2>Story About Us</h2>
-                        <p class="first-para"> Good things happen when people can move, whether across town or toward their dreams.Opportunities appear, open up, become reality.
+                        <p class="first-para"> Good things happen when people can move, whether across town or toward their dreams. Opportunities appear, open up and become reality.
                             What started as a way to tap a button to get a ride has led to billions of moments of human connection 
-                            as people around the world go all kinds of places in all kinds of ways with the help of our technology.
-                            </p>
-                        <p class="second-para">We are committed to doing our part, giving riders a way to get from point A to point B and technology is at the heart of our approach.
+                            as people around the world go to all kinds of places with the help of our technology.
+                            </p> <br>
+                        <p class="second-para"> With technology at the heart of our approach, we are committed to doing our part - giving riders a way to get from point A to point B.
                             We partner with safety advocates and develop new technologies and systems to help improve safety and help make it easier for everyone to get around.</p>
                     </div>
                 </div>
@@ -123,13 +123,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="services-item bg-gray">
-                                    <h4>A new way to ride with Ooster</h4>
+                                    <h4>A new way to ride with Ooter</h4>
                                     <p>----</p>
                                 </div>
                                 <div class="services-item bg-gray pd-b">
                                     <img src="img/services/two.png" alt="">
                                     <h4>Start Riding</h4>
-                                    <p>Select your desired e-scooter and key in its unique ID in the Ooster rental webpage,
+                                    <p>Select your desired e-scooter and key in its unique ID in the Ooter rental webpage,
                                         put on a helmet and go.</p>
                                 </div>
                             </div>
@@ -137,14 +137,14 @@
                                 <div class="services-item">
                                     <img src="img/services/one.png" alt="">
                                     <h4>Find Your Ride</h4>
-                                    <p>Open the Ooster website on your prefered browser,
+                                    <p>Open the Ooter website on your prefered browser,
                                         find a nearby e-scooter parking lot with available e-scooters.</p>
                                 </div>
                                 <div class="services-item pd-b">
                                     <img src="img/services/three.png" alt="">
                                     <h4>End Your Ride</h4>
                                     <p>Find the nearest e-scooter parking lot to your destination.
-                                        Key in the parking lot number in Ooster rental webpage to end your ride.</p>
+                                        Key in the parking lot number in the Ooter rental webpage to end your ride.</p>
                                 </div>
                             </div>
                         </div>
