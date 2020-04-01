@@ -123,7 +123,7 @@ require_once 'include/common.php';
                             }
                         }
 
-                        console.log(markers);
+                        // console.log(markers);
 
                         var options = {
                         zoom:12.5,
