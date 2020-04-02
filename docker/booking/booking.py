@@ -12,7 +12,7 @@ import pika
 
 app = Flask(__name__)
 
-scooterURL = "http://127.0.0.1:5000/scooter/"
+scooterURL = "http://host.docker.internal:5000/scooter/"
 
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/booking'
@@ -43,9 +43,9 @@ class Booking(db.Model):
             "startTime": self.startTime, "endTime": self.endTime}
 
 # return a list of all available bookings
-# @app.route("/booking")
-# def get_all(): 
-#     return jsonify({"bookings": [booking.json() for booking in Booking.query.all()]})
+@app.route("/booking")
+def get_all(): 
+    return jsonify({"bookings": [booking.json() for booking in Booking.query.all()]})
 
 # create a new booking
 @app.route("/booking/<string:bookingID>", methods=['POST'])

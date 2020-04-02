@@ -9,7 +9,7 @@ import sys
 
 app = Flask(__name__)
 
-parkingLotURL = "http://127.0.0.1:5002/parkingLot/"
+parkingLotURL = "http://host.docker.internal:5002/parkingLot/"
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/scooter'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/scooter'
