@@ -1,0 +1,32 @@
+# Build Docker containers for microservices.
+version: '3'
+
+services:
+
+    # run docker-compose up --build for rabbitmq to get it running
+    rabbitmq: 
+        image: rabbitmq:3-management
+        hostname: "rabbitmq"
+    
+    # docker-compose up --build below only when the rabbit is up
+    parkinglot:
+        build: ./parkingLot
+        environment:
+            - dbURL=mysql+mysqlconnector://is213@host.docker.internal:3306/parkinglot
+        ports:
+            - "5002:5002"
+    scooter:
+        build: ./scooter
+        environment:
+            - dbURL=mysql+mysqlconnector://is213@host.docker.internal:3306/scooter
+        ports:
+            - "5000:5000"
+    booking:
+        build: ./booking
+        environment:
+            - dbURL=mysql+mysqlconnector://is213@host.docker.internal:3306/booking
+        ports:
+            - "5001:5001"
+    # if have error, run above first and run notification in a separate terminal
+    notification:
+        build: ./notification
