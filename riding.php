@@ -62,7 +62,7 @@ require_once 'include/common.php';
 
     <style>
         #map{
-        height:600px;
+        height:550px;
         width:100%;
         }
     </style>
@@ -365,7 +365,7 @@ require_once 'include/common.php';
                         $("#paymentsuccess").hide();
                         
                         $("#notification").append(
-                            "<div class='contact-option'><span>Enter your email address to receive the details above: </span>" + "<br>" + '<input type="text" class="form-control" id="email" placeholder="Enter text">' +
+                            "<div class='contact-option'><span>Enter your email address to receive the details above: </span>" + "<br>" + '<input type="email" class="form-control" id="email" placeholder="Enter your email">' +
                             '<br><button class="btn btn-dark" id="emailSubmitButton">Submit</button>'
                         );
                         });

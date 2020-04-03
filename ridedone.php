@@ -60,7 +60,7 @@ require_once 'include/common.php';
 
     <style>
         #map{
-        height:600px;
+        height:550px;
         width:100%;
         }
     </style>
