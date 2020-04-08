@@ -92,7 +92,7 @@ require_once 'include/common.php';
                             );
                     const data = await response.json();
                     var coordinates = data.parkingLots;
-                    //console.log(coordinates);
+
                     if (!coordinates || !coordinates.length) {
                         showError('coordinates list empty or undefined.');
                     } else{
@@ -123,7 +123,6 @@ require_once 'include/common.php';
                             }
                         }
 
-                        // console.log(markers);
 
                         var options = {
                         zoom:12.5,
@@ -186,8 +185,8 @@ require_once 'include/common.php';
                     // Browser doesn't support Geolocation
                         handleLocationError(false, infoWindow2, map.getCenter());
                     }
-                }); //end of async function
-            }//end of init func
+                });
+            }
 
             function handleLocationError(browserHasGeolocation, infoWindow2, pos) {
                 infoWindow2.setPosition(pos);
@@ -307,11 +306,7 @@ require_once 'include/common.php';
             var scooterID = sessionStorage.getItem("scooterID");
             var parkingLotID = $('#parkingLotID').val();
             var bookingURL = "http://127.0.0.1:5001/booking/payment" + "/" + bookingID;
-            
-            // console.log(scooterID);
-            // console.log(bookingID);
-            // console.log(endTime);
-            // console.log(parkingLotID);
+
 
             
             try {
@@ -327,12 +322,9 @@ require_once 'include/common.php';
                 );
 
                 const info = await response.json();
-                // console.log(info);
-                // console.log(info.price);
-                // sessionStorage.setItem("price", info.price);
+
 
                 if (info.status == 201) {
-                    // console.log(info.price);
                     var cost = info.price;
                     sessionStorage.setItem("cost", cost);
                     
@@ -342,7 +334,6 @@ require_once 'include/common.php';
                         "<h4>For scooter <bold>" + scooterID + "</bold> parked at " + parkingLotID + ":</h4>" +
                         "<br> <div class='contact-option'><span> Your ride duration was for : </span> </div>" + info.duration + " minutes <br>" +
                         "<br> <div class='contact-option'><span> Your ride fare is : </span> </div> SGD $ " + info.price + "<br>" + "<br>"
-                        // "<br> <div class='contact-option' id='paymentsuccess'><span>Please make payment below : </span> </div> <br>"
                     );
                     
                     paypal.Buttons(
@@ -377,11 +368,6 @@ require_once 'include/common.php';
                     console.log(info);
                     showError(info.message);
                 }
-                // if (!info) {
-                //     showError('Booking failed.')
-                // } else {
-                //     window.location = 'http://localhost/ESD-Project/ridedone.php';
-                // }
             }
             catch (error) {
                 showError
@@ -391,10 +377,8 @@ require_once 'include/common.php';
         });
         $("#notification").submit(async (event) => {
             event.preventDefault();
-            // bookingID currently hardcoded
             var bookingID = '<?php echo $bookingID; ?>';
             var serviceEmailURL = "http://127.0.0.1:5001/booking/notification/"+bookingID;
-            // console.log(sessionStorage.getItem("x"));
             var emailData = $('#email').val();
             var costData = sessionStorage.getItem("cost");
             try{

@@ -17,11 +17,6 @@
 
 <body>
 
-    <!-- Page Preloder -->
-    <!-- <div id="preloder">
-        <div class="loader"></div>
-    </div> -->
-
     <!-- Header Section Begin -->
     <header class="header-section"  id="myHeader">
         <!-- <header class="header" id="myHeader"> -->
@@ -30,18 +25,6 @@
                 <a href="./index.php">
                     <img src="img/scooterlogo.png" alt="">
                 </a>
-            </div>
-            <div class="nav-menu">
-                <nav class="mainmenu mobile-menu">
-                    <ul>
-                        <!-- <li class="active"><a href="./index.html">Home</a></li> -->
-                        <!-- <li><a href="./about-us.html">About</a></li> -->
-                        <!-- <li><a href="./about-us.html">About</a></li>
-                        <li><a href="./contact.html">Contact Us</a></li> -->
-                        <!-- <li><a href="./gallery.html">Safety</a></li> -->
-                        <!-- <a><a href="./contact.html">Contacts</a></li> -->
-                    </ul>
-                </nav>
             </div>
             <div id="mobile-menu-wrap"></div>
         </div>

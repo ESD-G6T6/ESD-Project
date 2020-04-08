@@ -21,8 +21,7 @@ def sendEmail(data):
     status = 201
     result = {}
     with app.app_context():
-        content = "Dear Rider, \n\n Here is your ride summary for Booking ID " + data['bookingID']  + ": \n\t Scooter used: " + data['scooterID'] + " \n\t Start Time of Ride: " + data['startTime'] + "\n\t End Time of Ride: " + data['endTime'] + "\n\t Cost of Ride: $" + data['cost'] + "\n\n Hope you'll ride with us again! :)"
-
+        content = "Dear Rider, \n\n Here is your ride summary for Booking ID " + data['bookingID']  + ": \n\t Scooter used: " + data['scooterID'] + " \n\t Start Time of Ride: " + data['startTime'] + "\n\t End Time of Ride: " + data['endTime'] + "\n\t Cost of Ride: $" + data['cost'] + "\n\n Hope you'll ride with us again!\n-Ooter"
         subject = "Ride payment details for Booking ID " + data['bookingID'] 
 
         try:
@@ -55,8 +54,7 @@ def receiveMessage():
     channel.start_consuming()
     print()
 
-def callback(channel, method, properties, body): # required signature for the callback; no return
-
+def callback(channel, method, properties, body):
     data = json.loads(body)
     sendEmail(data)
 

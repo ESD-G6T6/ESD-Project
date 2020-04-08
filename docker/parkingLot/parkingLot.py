@@ -10,8 +10,6 @@ import sys
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/parkingLot'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/parkingLot'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -45,10 +43,11 @@ def get_all():
 def update_parkingLot(parkingLotID):
     result = None
     status = 201
+
     # data pass is not in json format
     if (not (request.is_json)):
         result = request.get_data()
-        status = 400 # Bad Request
+        status = 400 
         print("Received an invalid parking lot update error:")
         print(result)
         replymessage = json.dumps({"status": status, "message": "Parking Lot update information should be in JSON", "data": result}, default=str)
@@ -83,7 +82,7 @@ def update_parkingLot(parkingLotID):
                     db.session.commit()
                 except Exception as e:
                     status = 500
-                    result = {"status": status, "message": "An error occurred when updating the parking lot in DB.", "error": str(e)}
+                    result = {"status": status, "message": "An error occurred when updating the parking lot.", "error": str(e)}
         
         elif (availabilityStatus == 1):
             # update parking lot info (number of available scooters) in database
@@ -92,10 +91,10 @@ def update_parkingLot(parkingLotID):
                 db.session.commit()
             except Exception as e:
                 status = 500
-                result = {"status": status, "message": "An error occurred when updating the parking lot in DB.", "error": str(e)}
+                result = {"status": status, "message": "An error occurred when updating the parking lot.", "error": str(e)}
     
         if status == 201:
-            result = {"status": status, "message": "Successfully updated the parking lot DB", "availabilityStatus": availabilityStatus}
+            result = {"status": status, "message": "Successfully updated the parking lot ", "availabilityStatus": availabilityStatus}
     
     return result
 

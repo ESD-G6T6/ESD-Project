@@ -12,9 +12,7 @@ require_once 'include/common.php';
     <title>Ooter | Ride Now</title>
 
     <link rel="stylesheet" href="">
-        <!--[if lt IE 9]>
-          <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
+
         <!-- Bootstrap libraries -->
         <meta name="viewport" 
             content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -82,7 +80,6 @@ require_once 'include/common.php';
                 // Display an error under the main container
                 $('#map').append("<label>"+message+"</label>");
             }
-            // var map, infoWindow;
             function initMap(){
                 var markers = [];
                 var latitude = [];
@@ -100,7 +97,6 @@ require_once 'include/common.php';
                             );
                         const data = await response.json();
                         var coordinates = data.parkingLots;
-                        //console.log(coordinates);
                         if (!coordinates || !coordinates.length) {
                             showError('coordinates list empty or undefined.');
                         } else{
@@ -130,7 +126,7 @@ require_once 'include/common.php';
                                     });
                                 }
                             }
-                            // console.log(markers);
+
 
                             var options = { zoom:12.5, center:{lat:1.3521,lng:103.8198} }
 
@@ -149,11 +145,6 @@ require_once 'include/common.php';
                                     icon:props.icon
                                 });
 
-                                // // Check for custom icon
-                                // if(props.icon){
-                                //     // Set icon image
-                                //     marker.setIcon(props.icon);
-                                // }
 
                                 // Check content
                                 if(props.content){
@@ -190,8 +181,8 @@ require_once 'include/common.php';
                         // Browser doesn't support Geolocation
                         handleLocationError(false, infoWindow2, map.getCenter());
                         }
-                }); //end of async function
-            }//end of init func
+                }); 
+            }
 
             function handleLocationError(browserHasGeolocation, infoWindow2, pos) {
                 infoWindow2.setPosition(pos);

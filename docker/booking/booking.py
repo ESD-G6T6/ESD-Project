@@ -15,8 +15,6 @@ app = Flask(__name__)
 scooterURL = "http://host.docker.internal:5000/scooter/"
 
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/booking'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/booking'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -54,7 +52,7 @@ def create_booking(bookingID):
     result = {}
 
     # retrieve information about order and order items from the request
-    # check if booking existed
+    # check if booking exists
     if (Booking.query.filter_by(bookingID=bookingID).first()):
         status = 400
         result = {"status": status, "message": "A booking with bookingID '{}' already exists.".format(bookingID)}
@@ -72,6 +70,7 @@ def create_booking(bookingID):
             if booking.scooterID == "" or booking.parkingLotID == "" or booking.startTime == "":
                 status = 404
                 result = {"status": status, "message": "Missing input fields."}
+
             # add the booking to the booking database
             else:
                 try:
@@ -93,7 +92,7 @@ def create_booking(bookingID):
         return updateScooterStatus
     return result
 
-### Update scooter microservice through HTTP call
+# Update scooter microservice through HTTP call
 def update_scooter(result):
     result = json.loads(json.dumps(result, default=str))
     if "scooterID" in result: 
@@ -105,14 +104,13 @@ def update_scooter(result):
         print(scooterResult)
         return scooterResult
 
-# update the endTime of a booking, return the info about the updated booking record 
+# Update the endTime of a booking, return the info about the updated booking record 
 @app.route("/booking/payment/<string:bookingID>", methods=['POST'])
 def update_booking(bookingID):
     status = 201
     result = {}
 
-    # retrieve information about order and order items from the request
-    # check if booking existed
+    # Check if booking existed
     if (not (Booking.query.filter_by(bookingID=bookingID).first())):
         status = 400
         result = {"status": status, "message": "A booking with bookingID '{}' does not exists.".format(bookingID)}
@@ -139,8 +137,6 @@ def update_booking(bookingID):
                     try:
                         booking.endTime = data["endTime"]
                         db.session.commit()
-                        # scooterID = booking.scooterID
-                        # parkingLotID = booking.parkingLotID
 
                     except Exception as e:
                         status = 500
@@ -151,12 +147,12 @@ def update_booking(bookingID):
         # HTTP call to update scooter via update_scooter function
         updateScooterStatus = update_scooter(result)
 
-        # calculate the price of the ride
+        # Calculate the price of the ride
         if (updateScooterStatus["status"] == 201 and updateScooterStatus["availabilityStatus"] == 1):
             dbBooking = Booking.query.filter_by(bookingID=bookingID).first()
 
-            endTime = dbBooking.endTime # 2020-03-07 00:06:00
-            startTime = dbBooking.startTime # 2020-03-07 00:01:00
+            endTime = dbBooking.endTime 
+            startTime = dbBooking.startTime 
             duration = str(endTime - startTime)
             
             delta = timedelta(hours=int(duration.split(':')[0]), minutes=int(duration.split(':')[1]), seconds=int(duration.split(':')[2]))
@@ -172,7 +168,7 @@ def update_booking(bookingID):
         return updateScooterStatus
     return result
 
-    # sends content of email to be sent to user to notification.py via AMQP 
+# Sends content of email to be sent to user to notification.py via AMQP 
 @app.route("/booking/notification/<string:bookingID>", methods=['POST'])
 def send_notification(bookingID):
     status = 201
@@ -191,12 +187,14 @@ def send_notification(bookingID):
         if (dbEndTime == None):
             status = 400
             result = {"status": status, "message": "A booking with bookingID '{}' has not ended.".format(bookingID)}
+        # check if email enterted is empty
         else:
             data = request.get_json()
             if (data['email'] == ""):
                 status = 400
-                result = {"status": status, "message": "Invalid email entered!"}
+                result = {"status": status, "message": "Invalid email entered"}
 
+            # send message to broker
             else:
                 hostname = "rabbitmq"
                 port = 5672
@@ -221,14 +219,11 @@ def send_notification(bookingID):
                 channel.basic_publish(exchange=exchangename, routing_key="notification.email", body=message,
                     properties=pika.BasicProperties(delivery_mode = 2)
                 )
-                result = {"status": status, "message": "Your ride summary has been sent to your designated email. <br> Thank you!"}
-                print("email request sent to notification")
+                result = {"status": status, "message": "Your ride summary has been sent to your designated email.\nThank you!"}
+                print("email request sent to notification...")
                 connection.close()
 
     return result
-
-
-
 
 if __name__ == '__main__': 
     app.run(host='0.0.0.0', port=5001, debug=True)
